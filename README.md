@@ -1,24 +1,52 @@
 # PHONEMeS-ILP
 ILP implementation of PHONEMeS - Enio GJERGA
 
-## PHONEMeS Overview
-PHONEMeS (PHOsphorylation NEtworks for Mass Spectrometry) is a method to model signaling networks based on untargeted phosphoproteomics mass spectrometry data and kinase/phosphatase-substrate interactions.
+**PHONEMeS** (**PHO**sphorylation **NE**tworks for **M**ass **S**pectrometry) is a method to model signalling networks based on untargeted phosphoproteomics mass spectrometry data and kinase/phosphatase-substrate interactions. 
+Please see [Terfve et al.](http://www.nature.com/articles/ncomms9033) for an explanation of the methodolgy.
 
-This package contains the R package and accompanying scripts that implement the method as well as several examples of how to run a PHONEMeS analysis.
+This repository contains the scripts of the ILP (Integer Linear Programming) implementation of the [PHONEMeS R package](https://github.com/saezlab/PHONEMeS/tree/master/Package) and accompanying scripts that implement the method.
 
-The input for PHONEMeS consists of phosphoproteomic data after treatment with kinase inhibitors. Several approaches, such as Gaussian Mixture Modeling, can then be used to find phosphosites that exhibit a naturally Boolean behaviour with two populations, representing a control and a perturbed state. The data are mapped unto a kinase/phosphatase-substrate network taken from several dedicated databases such as Omnipath. PHONEMeS-ILP then optimizes the network and extracts possible paths connecting inhibited kinases and perturbed phosphosites through this new ILP (Integer Linear Programming) implementation.
+### License
 
-The general pipeline of how PHONEMeS works is as depicted in the picture below:
+Distributed under the GNU GPLv2 License. See accompanying file [LICENSE.txt](https://github.com/saezlab/PHONEMeS/blob/master/LICENSE.txt) or copy at https://www.gnu.org/licenses/gpl-2.0.html.
 
-<img src="/PHONEMeS-ILP/Public/fig1.png" alt="General Pipeline">
+### Installation
 
-Form more information about PHONEMeS, pleas visit it's dedicated web-page: https://saezlab.github.io/PHONEMeS/
+Before using the method, please install the current R package for PHONEMeS. For installation, download the tar file of the package and type in R:
 
-**Main References:**
+```R
+install.packages("PHONEMeS_0.2.7.tar.gz", repos=NULL)
+```
 
-Terfve, C. D. A., Wilkes, E. H., Casado, P., Cutillas, P. R., and Saez-Rodriguez, J. (2015). [Large-scale models of signal propagation in human cells derived from discovery phosphoproteomic data](https://www.nature.com/articles/ncomms9033). *Nature Communications, 6:8033*.
+Other supportive R packages needed are:
 
-Wilkes, E. H., Terfve, C., Gribben, J. G., Saez-Rodriguez, J., and Cutillas, P. R. (2015). [Empirical inference of circuitry and plasticity in a kinase signaling network](http://www.pnas.org/content/112/25/7719.abstract). *Proceedings of the National Academy of Sciences of the United States of America, 112(25):7719–24*.
+*igraph* which you can easily install by typing in R the below line:
+```R
+install.packages("igraph")
+```
 
+*BioNet* which you can easily install by typing in R the below line:
+```R
+source("https://bioconductor.org/biocLite.R")
+biocLite("BioNet")
+```
 
-## ILP Implementation
+*XML* which can be downloaded [here](https://cran.r-project.org/src/contrib/XML_3.98-1.9.tar.gz) and then you can install by typing in R:
+
+```R
+install.packages("XML_3.98-1.9.tar.gz", repos=NULL)
+```
+
+### Usage
+
+For a guide how to run a PHONEMeS analysis, please refer to the dedicated [documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples).
+
+### References
+
+[Terfve et al.](http://www.nature.com/articles/ncomms9033):
+
+> Terfve, C. D. A., Wilkes, E. H., Casado, P., Cutillas, P. R., and Saez-Rodriguez, J. (2015). Large-scale models of signal propagation in human cells derived from discovery phosphoproteomic data. *Nature Communications*, 6:8033.
+
+[Wilkes et al.](http://www.pnas.org/content/112/25/7719.abstract) (description of parts of the data)
+
+> Wilkes, E. H., Terfve, C., Gribben, J. G., Saez-Rodriguez, J., and Cutillas, P. R. (2015). Empirical inference of circuitry and plasticity in a kinase signaling network. *Proceedings of the National Academy of Sciences of the United States of America,* 112(25):7719–24.
