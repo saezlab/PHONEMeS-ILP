@@ -10,10 +10,11 @@ The input for PHONEMeS consists of phosphoproteomic data after treatment with ki
 
 Form more information about PHONEMeS, pleas visit it's official dedicated web-page: https://saezlab.github.io/PHONEMeS/
 
-Main References:
-Terfve, C. D. A., Wilkes, E. H., Casado, P., Cutillas, P. R., and Saez-Rodriguez, J. (2015). [Large-scale models of signal propagation in human cells derived from discovery phosphoproteomic data](https://www.nature.com/articles/ncomms9033). Nature Communications, 6:8033.
+**Main References:**
 
-Wilkes, E. H., Terfve, C., Gribben, J. G., Saez-Rodriguez, J., and Cutillas, P. R. (2015). [Empirical inference of circuitry and plasticity in a kinase signaling network](http://www.pnas.org/content/112/25/7719.abstract). Proceedings of the National Academy of Sciences of the United States of America, 112(25):7719–24.
+Terfve, C. D. A., Wilkes, E. H., Casado, P., Cutillas, P. R., and Saez-Rodriguez, J. (2015). [Large-scale models of signal propagation in human cells derived from discovery phosphoproteomic data](https://www.nature.com/articles/ncomms9033). *Nature Communications, 6:8033*.
+
+Wilkes, E. H., Terfve, C., Gribben, J. G., Saez-Rodriguez, J., and Cutillas, P. R. (2015). [Empirical inference of circuitry and plasticity in a kinase signaling network](http://www.pnas.org/content/112/25/7719.abstract). *Proceedings of the National Academy of Sciences of the United States of America, 112(25):7719–24*.
 
 
 ## ILP Implementation
