@@ -10,7 +10,7 @@ The input for PHONEMeS consists of phosphoproteomic data after treatment with ki
 
 The general pipeline of how PHONEMeS works is as depicted in the picture below:
 
-<img src="/PHONEMeS-ILP/public/fig1.png" alt="General Pipeline">
+<img src="https://github.com/saezlab/PHONEMeS-ILP/public/fig1.png" alt="General Pipeline">
 
 Form more information about PHONEMeS, pleas visit it's dedicated web-page: https://saezlab.github.io/PHONEMeS/
 
