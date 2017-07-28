@@ -8,7 +8,7 @@ The pipeline is the same for all the case studies present in the Examples reposi
 
 * Download and save the data in a local folder where you wish to perform the analysis. The data folder will typicaly contain a background network containing a set of possible kinase to substrate interactions which we might obtain from multiple online data-bases such as Omnipath. It will also contain the results from the GMM.
 
-* Download and save the files present on the Script folder.
+* Download and save the files present on the Codes repository.
 
 ## Running the scripts
 
@@ -21,7 +21,7 @@ The pipeline is the same for all the case studies present in the Examples reposi
 
 * *resultsSIF.txt* is a *sif* representation of our model and it can be easily loaded and used by Cytoscape for visualization.
 
-* For a nicer visualization of our resulting network, run first the ```visualNetwork.R``` script which will assign the node attributes to each of the kinases/phosphosites present in our model. Then, by "Import Table from File" in cytoscape, you import the resulting *nodesAttributes.txt* file.
+* For a nicer visualization of our resulting network, run first the ```visualNetwork.R``` script of the Codes repository which will assign the node attributes to each of the kinases/phosphosites present in our model. Then, by "Import Table from File" in cytoscape, you import the resulting *nodesAttributes.txt* file.
 
 * Then by “Import Styles” you import the visual properties by selecting the ```PHONEMeS_vizmap.props``` which can be found on the Results folder.
 
