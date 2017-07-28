@@ -125,9 +125,7 @@ write("End", data, append = TRUE)
 
 system(paste0(getwd(), "/cplex -f cplexCommand2.txt"))
 
-library(CellNOptR)
 resultsSIF2 <- readOutSIF(cplexSolutionFileName = "results2.txt", binaries = binaries2)
-write.table(resultsSIF2, file = "resultsSIF2.txt", quote = FALSE, row.names = FALSE, col.names = FALSE)
 resultsSIF <- reducedModel(sif = resultsSIF2, dataMatrix = dataMatrix)
 write.table(resultsSIF, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
