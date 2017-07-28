@@ -8,6 +8,10 @@ This package contains the R package and accompanying scripts that implement the 
 
 The input for PHONEMeS consists of phosphoproteomic data after treatment with kinase inhibitors. Several approaches, such as Gaussian Mixture Modeling, can then be used to find phosphosites that exhibit a naturally Boolean behaviour with two populations, representing a control and a perturbed state. The data are mapped unto a kinase/phosphatase-substrate network taken from several dedicated databases such as Omnipath. PHONEMeS-ILP then optimizes the network and extracts possible paths connecting inhibited kinases and perturbed phosphosites through this new ILP (Integer Linear Programming) implementation.
 
+The general pipeline of how PHONEMeS works is as depicted in the picture below:
+
+<img src="/PHONEMeS-ILP/public/fig1.png" alt="General Pipeline">
+
 Form more information about PHONEMeS, pleas visit it's dedicated web-page: https://saezlab.github.io/PHONEMeS/
 
 **Main References:**
