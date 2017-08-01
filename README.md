@@ -41,6 +41,14 @@ install.packages("XML_3.98-1.9.tar.gz", repos=NULL)
 
 For a guide how to run a PHONEMeS analysis, please refer to the dedicated [documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples).
 
+### CPLEX
+
+PHONEMeS-ILP is CPLEX depndent meaning that the user needs to obtain an IBM ILOG CPLEX licence and then save the executable file to the working directory. The IBM ILOG CPLEX Optimization Studio license can be obtained for free for:
+
+* Students: https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=9b4eadea-9776-e611-9421-b8ca3a5db7a1
+
+* Teachers, researchers and university staff: https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=6fcc1096-7169-e611-9420-b8ca3a5db7a1
+
 ### References
 
 [Terfve et al.](http://www.nature.com/articles/ncomms9033):
