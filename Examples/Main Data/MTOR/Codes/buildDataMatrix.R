@@ -63,9 +63,9 @@ buildDataMatrix <- function(dataGMM = dataGMM, pknList = pknList, targets, exper
   colnames(dM) <- colnames(dataMatrix)
   
   for(i in 1:ncol(dataMatrix)){
-      
-      dM[1, i] <- min(dataMatrix[, i])
-      
+    
+    dM[1, i] <- min(dataMatrix[, i])
+    
   }
   
   dataMatrix <- dM
