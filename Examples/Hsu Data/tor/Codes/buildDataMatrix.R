@@ -99,4 +99,5 @@ buildDataMatrix <- function(dataGMM = dataGMM, pknList = pknList, targets, exper
   res <- list(dataMatrix=dataMatrix, tgID=tgID, dnID=dnID, dsID=dsID, species=species)
   
   return(res)
+  
 }
