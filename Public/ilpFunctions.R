@@ -273,20 +273,28 @@ write_constraints_4 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
   
   constraints4 <- c()
   for(i in 1:length(nIncident)){
-    temp <- ""
-    for(j in 1:length(nIncident[[i]])){
+    if(length(nIncident[[i]]) > 0){
+      temp <- ""
+      for(j in 1:length(nIncident[[i]])){
+        
+        if(j==1){
+          temp <- paste(temp, binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
+        }
+        else{
+          temp <- paste(temp, " + ", binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
+        }
+        
+      }
       
-      if(j==1){
-        temp <- paste(temp, binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
-      }
-      else{
-        temp <- paste(temp, " + ", binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
-      }
+      bb <- which(dataMatrix$species == nNames[i])
+      constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+    }
+    else{
+      
+      bb <- which(dataMatrix$species == nNames[i])
+      constraints4 <- c(constraints4, paste(binaries[[1]][bb], " = 0"))
       
     }
-    
-    bb <- which(dataMatrix$species == nNames[i])
-    constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
   }
   
   return(constraints4)
