@@ -8,7 +8,9 @@ The pipeline is the same for all the case studies present in the Examples reposi
 
 * Download and save the data in a local folder where you wish to perform the analysis. The data folder will typicaly contain a background network containing a set of possible kinase to substrate interactions which we might obtain from multiple online data-bases such as Omnipath. It will also contain the results from the GMM.
 
-* Download and save the files present on the Codes repository.
+* On your working directory, download and save the files present on the [Public](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Public) repository. These files mainly represnt the scripts where the functions which implement the ILP method are written. Also on this repository you will find the *.txt* files containing the commands which will be executed by the CPLEX exe file.
+
+* On your working directory, download and save the files present on the Codes folder of each example.
 
 ## Running the scripts
 
@@ -21,7 +23,7 @@ The pipeline is the same for all the case studies present in the Examples reposi
 
 * *resultsSIF.txt* is a *sif* representation of our model and it can be easily loaded and used by Cytoscape for visualization.
 
-* For a nicer visualization of our resulting network, run first the ```visualNetwork.R``` script of the Codes repository which will assign the node attributes to each of the kinases/phosphosites present in our model. Then, by "Import Table from File" in cytoscape, you import the resulting *nodesAttributes.txt* file.
+* For a nicer visualization of our resulting network, run first the ```visualNetwork.R``` script of the Codes repository which will assign the node attributes to each of the kinases/phosphosites present in our model. Then, by "Import Table from File" in cytoscape, you import the resulting *nodesAttributes.txt* file by making sure that the column containing the attributes is named ```nodesP```.
 
 * Then by “Import Styles” you import the visual properties by selecting the ```PHONEMeS_vizmap.props``` which can be found on the Results folder.
 
