@@ -134,3 +134,4 @@ write.table(resultsSIF, file = "resultsSIF.txt", quote = FALSE, row.names = FALS
 end.time <- Sys.time()
 time.taken <- end.time - start.time
 time.taken
+
