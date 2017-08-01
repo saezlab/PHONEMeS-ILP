@@ -43,7 +43,7 @@ For a guide how to run a PHONEMeS analysis, please refer to the dedicated [docum
 
 ### CPLEX
 
-PHONEMeS-ILP is CPLEX depndent meaning that the user needs to obtain an IBM ILOG CPLEX licence and then save the executable file to the working directory. The IBM ILOG CPLEX Optimization Studio license can be obtained for free for:
+PHONEMeS-ILP is CPLEX depndent meaning that the user needs to obtain an IBM ILOG CPLEX licence and then save the executable file to the working directory. The IBM ILOG CPLEX Optimization Studio license can be obtained for free by:
 
 * Students: https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=9b4eadea-9776-e611-9421-b8ca3a5db7a1
 
