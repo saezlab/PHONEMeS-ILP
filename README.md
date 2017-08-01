@@ -4,7 +4,7 @@ ILP implementation of PHONEMeS - Enio GJERGA
 **PHONEMeS** (**PHO**sphorylation **NE**tworks for **M**ass **S**pectrometry) is a method to model signalling networks based on untargeted phosphoproteomics mass spectrometry data and kinase/phosphatase-substrate interactions. 
 Please see [Terfve et al.](http://www.nature.com/articles/ncomms9033) for an explanation of the methodolgy.
 
-This repository contains the scripts of the ILP (Integer Linear Programming) implementation of the [PHONEMeS R package](https://github.com/saezlab/PHONEMeS/tree/master/Package) and accompanying scripts that implement the method.
+This repository contains the scripts of the ILP (Integer Linear Programming) implementation of the [PHONEMeS R package](https://github.com/saezlab/PHONEMeS/tree/master/Package) and accompanying scripts that implement the method. ILP is a mathematical optimisation problem in which the objective function and constraints are linear, while the variables are integers.
 
 ### License
 
