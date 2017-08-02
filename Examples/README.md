@@ -10,13 +10,13 @@ The pipeline is the same for all the case studies present in the Examples reposi
 
 * On your working directory, download and save the files present on the [Public](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Public) repository. These files mainly represnt the scripts where the functions which implement the ILP method are written. Also on this repository you will find the *.txt* files containing the commands which will be executed by the CPLEX exe file.
 
-* On your working directory, download and save the files present on the Codes folder of each example.
+* On your working directory, download and save the files present on the Codes (```buildDataMatrix.R``` and ```executionScript.R```) folder of each example.
 
 ## Running the scripts
 
 * By running the ```buildDataMatrix.R```, ```ilpFunctions.R``` and ```ilpFunctions2.R``` scripts you are calling the necessay functions needed to write the objective function, bounds and constraints of the ILP problem.
 
-* Then by running the ```executionScript.R``` you execute all the functions called from which you obtain the final *resultsSIF.txt* file which is basically the result that PHONEMeS gives you and which represents the optimal reconstructed pathway activity model.
+* Then by running the ```executionScript.R``` you execute all the functions called from which you obtain the final *resultsSIF.txt* file which is basically the result that PHONEMeS gives you and which represents the optimal reconstructed pathway activity model and which can be visualized in Cytoscape.
 
 
 ## Network Visualization
