@@ -302,6 +302,46 @@ write_constraints_4 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
 }
 
 ##
+write_constraints_5 <- function(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList){
+  
+  nNames <- dataMatrix$species[dataMatrix$dsID]
+  
+  sif <- createSIF(pknList)
+  
+  nIncident <- list()
+  for(i in 1:length(nNames)){
+    
+    temp <- c()
+    nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 3]==nNames[i]))
+    
+  }
+  
+  constraints5 <- c()
+  for(i in 1:length(nIncident)){
+    if(length(nIncident[[i]]) > 0){
+      temp <- ""
+      for(j in 1:length(nIncident[[i]])){
+        
+        if(j==1){
+          temp <- paste(temp, binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
+        }
+        else{
+          temp <- paste(temp, " + ", binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
+        }
+        
+      }
+      
+      bb <- which(dataMatrix$species == nNames[i])
+      constraints5 <- c(constraints5, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+    }
+  }
+  
+  return(constraints5)
+  
+}
+
+
+##
 all_constraints <- function(equalityConstraints = equalityConstraints, constraints1 = constraints1, constraints2 = constraints2,
                             constraints3 = constraints3, constraints4 = constraints4, constraints5 = constraints5){
   
@@ -351,44 +391,6 @@ all_constraints <- function(equalityConstraints = equalityConstraints, constrain
   }
   
   return(allConstraints[3:length(allConstraints)])
-  
-}
-##
-write_constraints_5 <- function(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList){
-  
-  nNames <- dataMatrix$species[dataMatrix$dsID]
-  
-  sif <- createSIF(pknList)
-  
-  nIncident <- list()
-  for(i in 1:length(nNames)){
-    
-    temp <- c()
-    nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 3]==nNames[i]))
-    
-  }
-  
-  constraints5 <- c()
-  for(i in 1:length(nIncident)){
-    if(length(nIncident[[i]]) > 0){
-      temp <- ""
-      for(j in 1:length(nIncident[[i]])){
-        
-        if(j==1){
-          temp <- paste(temp, binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
-        }
-        else{
-          temp <- paste(temp, " + ", binaries[[1]][nIncident[[i]][j] + dim(dataMatrix[[1]])[1]*dim(dataMatrix[[1]])[2]], sep = "")
-        }
-        
-      }
-      
-      bb <- which(dataMatrix$species == nNames[i])
-      constraints5 <- c(constraints5, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
-    }
-  }
-  
-  return(constraints5)
   
 }
 
@@ -445,33 +447,6 @@ readOutSIF<- function(cplexSolutionFileName, binaries = binaries){
 }
 
 ##
-sif2graph<-function(sif){
-  
-  #if the input is a character it shoud be the name ot the sif file
-  #otherwise a matrix in the sif format
-  if (is.vector(sif) && (typeof(sif) == "character")){
-    sif = read.table(sif) 
-  }
-  
-  # build the unique vertices from the column 1 and 3 of the SIF file
-  vertices = unique(c(as.character(sif[,1]), as.character(sif[,3])))
-  # some aliases
-  v1 = sif[,1]
-  v2 = sif[,3]
-  edges = as.numeric(sif[,2])
-  
-  l = length(vertices) - 1
-  g <- new("graphNEL", nodes=vertices, edgemode="directed")
-  #weights = rep(1, l)
-  weights = edges
-  for (i in 1:length(v1)){
-    g <- addEdge(as.character(v1[i]), as.character(v2[i]), g, weights[i])
-  }
-  return(g)
-  
-}
-
-##
 reducedModel <- function(sif = sif, dataMatrix = dataMatrix){
   
   gg <- igraph.from.graphNEL(sif2graph(sif = sif))
@@ -510,32 +485,18 @@ reducedModel <- function(sif = sif, dataMatrix = dataMatrix){
   sifNew[1, 1] <- allSpecies[allPaths[[1]]$res[[1]][1]]
   sifNew[1, 2] <- 1
   sifNew[1, 3] <- allSpecies[allPaths[[1]]$res[[1]][2]]
-  kk <- c()
   for(i in 1:length(allPaths)){
     
-    if(length(allPaths[[i]]$res) == 0){
+    for(j in 1:length(allPaths[[i]]$res)){
       
-      kk <- c(kk, i)
-      
-    }
-    
-  }
-  for(i in 1:length(allPaths)){
-    
-    if((i %in% kk) == FALSE){
-      
-      for(j in 1:length(allPaths[[i]]$res)){
+      for(k in 1:(length(allPaths[[i]]$res[[j]])-1)){
         
-        for(k in 1:(length(allPaths[[i]]$res[[j]])-1)){
-          
-          temp <- matrix(, nrow = 1, ncol = 3)
-          temp[1, 1] <- allSpecies[allPaths[[i]]$res[[j]][k]]
-          temp[1, 2] <- 1
-          temp[1, 3] <- allSpecies[allPaths[[i]]$res[[j]][k+1]]
-          
-          sifNew <- rbind(sifNew, temp)
-          
-        }
+        temp <- matrix(, nrow = 1, ncol = 3)
+        temp[1, 1] <- allSpecies[allPaths[[i]]$res[[j]][k]]
+        temp[1, 2] <- 1
+        temp[1, 3] <- allSpecies[allPaths[[i]]$res[[j]][k+1]]
+        
+        sifNew <- rbind(sifNew, temp)
         
       }
       
@@ -544,6 +505,23 @@ reducedModel <- function(sif = sif, dataMatrix = dataMatrix){
   }
   
   return(unique(sifNew))
+  
+}
+
+##
+writeFile <- function(objectiveFunction, constraints, bounds, binaries){
+  
+  data = "testFile.lp"
+  write("enter Problem", data)
+  write("", data, append = TRUE)
+  write("Minimize", data, append = TRUE)
+  
+  write(objectiveFunction, data, append = TRUE)
+  
+  write("Subject To", data, append = TRUE)
+  write(constraints, data, append = TRUE)
+  
+  write("End", data, append = TRUE)
   
 }
 
@@ -571,47 +549,33 @@ removeRedundancies <- function(sif = sif, dataMatrix = dataMatrix){
   sP <- list()
   for(i in 1:length(tNames)){
     
-    kk <- c()
     for(j in 1:length(sNames)){
       
       allP <- all_simple_paths(gg, from = which(rownames(adj) == tNames[i]), to = which(colnames(adj) == sNames[j]))
-      if(length(allP) > 0){
+      ss <- c()
+      for(k in 1:length(allP)){
         
-        ss <- c()
-        for(k in 1:length(allP)){
+        if(length(allP[[k]]) > 2){
           
-          if(length(allP[[k]]) > 2){
+          sum = 0
+          for(l in 2:(length(allP[[k]])-1)){
             
-            sum = 0
-            for(l in 2:(length(allP[[k]])-1)){
-              
-              currNode <- rownames(adj)[allP[[k]][l]]
-              approxNode <- sif[which(sif[, 1]==currNode), 3]
-              approxSinkNode <- which(!(approxNode %in% sif[, 1]))
-              sum = sum + length(approxSinkNode)
-              
-            }
+            currNode <- rownames(adj)[allP[[k]][l]]
+            approxNode <- sif[which(sif[, 1]==currNode), 3]
+            approxSinkNode <- which(!(approxNode %in% sif[, 1]))
+            sum = sum + length(approxSinkNode)
             
           }
           
-          ss <- c(ss, sum)
-          
         }
         
-      }
-      else{
-        
-        kk <- c(kk, j)
+        ss <- c(ss, sum)
         
       }
       
       for(l in 1:length(which(ss==max(ss)))){
         
-        if((l %in% kk) == FALSE){
-          
-          sP[[length(sP)+1]] <- unlist(allP[[which(ss==max(ss))[l]]])
-          
-        }
+        sP[[length(sP)+1]] <- unlist(allP[[which(ss==max(ss))[l]]])
         
       }
       
@@ -646,19 +610,109 @@ removeRedundancies <- function(sif = sif, dataMatrix = dataMatrix){
   
 }
 
+removeRedundantEdges <- function(resultsSIF1 = resultsSIF1){
+  
+  kinases <- c()
+  for(i in 1:nrow(resultsSIF1)){
+    
+    if(length(strsplit(resultsSIF1[i, 3], split = "_")[[1]])==2){
+      
+      kinases <- c(kinases, resultsSIF1[i, 3])
+      
+    }
+    
+  }
+  kinases <- unique(kinases)
+  
+  toRem <- c()
+  for(i in 1:length(kinases)){
+    
+    idx <- which(resultsSIF1[, 3]==kinases[i])
+    
+    if(length(idx) > 1){
+      
+      ctrl <- 0
+      for(j in 1:length(idx)){
+        
+        if(strsplit(resultsSIF1[idx[j], 1], split = "_")[[1]][3] != "R1"){
+          
+          ctrl <- ctrl +1
+          
+        }
+        
+      }
+      
+      if(ctrl > 0){
+        
+        for(j in 1:length(idx)){
+          
+          if(strsplit(resultsSIF1[idx[j], 1], split = "_")[[1]][3] == "R1"){
+            
+            toRem <- c(toRem, idx[j])
+            
+          }
+          
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+  if(length(toRem) > 0){
+    
+    idxRem <- c()
+    
+    speciesRem <- resultsSIF1[toRem, 1]
+    
+    for(i in 1:nrow(resultsSIF1)){
+      
+      if(resultsSIF1[i, 1]%in%speciesRem || resultsSIF1[i, 3]%in%speciesRem){
+        
+        idxRem <- c(idxRem, i)
+        
+      }
+      
+    }
+    
+    resultsSIF1 <- resultsSIF1[-idxRem, ]
+    
+    return(resultsSIF1)
+    
+  }
+  else{
+    
+    return(resultsSIF1)
+    
+  }
+  
+}
+
 ##
-writeFile <- function(objectiveFunction, constraints, bounds, binaries){
+removeRedundantNodes <- function(resultsSIF1 = resultsSIF1){
   
-  data = "testFile.lp"
-  write("enter Problem", data)
-  write("", data, append = TRUE)
-  write("Minimize", data, append = TRUE)
+  idxToRem <- c()
   
-  write(objectiveFunction, data, append = TRUE)
+  temp <- resultsSIF1
   
-  write("Subject To", data, append = TRUE)
-  write(constraints, data, append = TRUE)
+  for(i in 1:nrow(resultsSIF1)){
+    
+    temp[i, 1] <- gsub(pattern = "_R1", replacement = "", x = resultsSIF1[i, 1])
+    temp[i, 3] <- gsub(pattern = "_R1", replacement = "", x = resultsSIF1[i, 3])
+    
+  }
   
-  write("End", data, append = TRUE)
+  for(i in 1:nrow(resultsSIF1)){
+    
+    if(temp[i, 1]==temp[i, 3]){
+      
+      idxToRem <- c(idxToRem, i)
+      
+    }
+    
+  }
+  
+  return(temp[-idxToRem, ])
   
 }
