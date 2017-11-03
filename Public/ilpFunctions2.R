@@ -101,6 +101,28 @@ write_objective_function_step_2 <- function(binaries = binaries, dataMatrix = da
 }
 
 ##
+write_objective_function_step_2Edges <- function(binaries = binaries, dataMatrix = dataMatrix){
+  
+  objectiveFunction <- "obj:\t"
+  for(i in 1:length(binaries[[3]])){
+    
+    if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "reaction"){
+      
+      if(!(strsplit(binaries[[3]][i], split = " ")[[1]][2] %in% dataMatrix$species[dataMatrix$dsID])){
+        
+        objectiveFunction <- paste(objectiveFunction, " + ", binaries[[1]][i], sep = "")
+        
+      }
+      
+    }
+    
+  }
+  
+  return(objectiveFunction)
+  
+}
+
+##
 write_boundaries_step_2 <- function(binaries = binaries){
   
   bounds <- c()
@@ -334,7 +356,8 @@ write_reaction_constraints <- function(dataMatrix = dataMatrix, sif = resultsSIF
 }
 
 ##
-all_constraints_2 <- function(constraints1 = constraints1, constraints2 = constraints2, constraints3 = constraints3, constraints4 = constraints4, constraints5 = constraints5){
+all_constraints_2 <- function(constraints1 = constraints1, constraints2 = constraints2, constraints3 = constraints3, constraints4 = constraints4, constraints5 = constraints5,
+                              constraints6 = constraints6){
   
   kk <- 1
   allConstraints <- c()
@@ -374,6 +397,17 @@ all_constraints_2 <- function(constraints1 = constraints1, constraints2 = constr
     
   }
   
+  if(length(constraints6) > 0){
+    
+    for(i in 1:length(constraints6)){
+      
+      allConstraints <- c(allConstraints, paste("c", kk, ":\t", constraints6[i], "\t \t", sep = ""))
+      kk <- kk + 1
+      
+    }
+    
+  }
+  
   return(allConstraints)
   
 }
@@ -391,6 +425,16 @@ readOutSIF_step_2<- function(cplexSolutionFileName, binaries = binaries){
   
   cplexSolutionData <- xmlParse(cplexSolutionFileName)
   cplexSolution <- xmlToList(cplexSolutionData)
+  for(i in 1:length(cplexSolution[[4]])){
+    
+    if(abs(as.numeric(cplexSolution[[4]][i]$variable[3])) > 0.5){
+      cplexSolution[[4]][i]$variable[3] < "1"
+    }
+    else{
+      cplexSolution[[4]][i]$variable[3] < "0"
+    }
+    
+  }
   
   cplexSolutionEdges <- list()
   for(i in 1:length(cplexSolution$variables)){
@@ -444,5 +488,85 @@ writeFile <- function(objectiveFunction, constraints, bounds, binaries){
   write(constraints, data, append = TRUE)
   
   write("End", data2, append = TRUE)
+  
+}
+
+##
+identifyLoops <- function(resultsSIF=resultsSIF){
+  
+  resultsSIF1 <- resultsSIF
+  
+  gg <- graph_from_data_frame(d = as.data.frame(resultsSIF1[, c(1, 3)]), directed = TRUE)
+  
+  adj <- get.adjacency(gg)
+  
+  loops <- list()
+  
+  species <- c("Species")
+  
+  for(i in 1:nrow(resultsSIF1)){
+    
+    sp <- get.all.shortest.paths(graph = gg, from = which(rownames(adj)==resultsSIF1[i, 3]), to = which(rownames(adj)==resultsSIF1[i, 1]))
+    
+    if((length(sp$res) > 0) && !(resultsSIF1[i, 1]%in%species) && !(resultsSIF1[i, 3]%in%species)){
+      
+      for(j in 1:length(sp$res)){
+        
+        loops[[length(loops)+1]] <- sp$res[[j]]
+        
+        species <- unique(c(species, rownames(adj)[sp$res[[j]]]))
+        
+      }
+      
+    }
+    
+  }
+  
+  return(loops)
+  
+}
+
+##
+write_loop_constraints <- function(resultsSIF1=resultsSIF1, binaries=binaries){
+  
+  loops <- identifyLoops(resultsSIF=resultsSIF1)
+  
+  gg <- graph_from_data_frame(d = as.data.frame(resultsSIF1[, c(1, 3)]), directed = TRUE)
+  
+  adj <- get.adjacency(gg)
+  
+  loopConstraints <- c()
+  
+  if(length(loops) > 0){
+    
+    for(i in 1:length(loops)){
+      
+      for(j in 1:length(loops[[i]])){
+        
+        if(j==1){
+          
+          pp <- paste0(binaries[[1]][which(binaries[[3]]==paste0("reaction ", rownames(adj)[loops[[i]][j]], "=", rownames(adj)[loops[[i]][j+1]]))])
+          
+        }
+        else if(j==length(loops[[i]])){
+          
+          pp <- paste0(pp, " + ", binaries[[1]][which(binaries[[3]]==paste0("reaction ", rownames(adj)[loops[[i]][j]], "=", rownames(adj)[loops[[i]][1]]))])
+          
+        }
+        else{
+          
+          pp <- paste0(pp, " + ", binaries[[1]][which(binaries[[3]]==paste0("reaction ", rownames(adj)[loops[[i]][j]], "=", rownames(adj)[loops[[i]][j+1]]))])
+          
+        }
+        
+      }
+      
+      loopConstraints <- c(loopConstraints, paste0(pp, " <= ", length(loops[[i]])-1))
+      
+    }
+    
+  }
+  
+  return(loopConstraints)
   
 }
