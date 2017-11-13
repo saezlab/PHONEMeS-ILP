@@ -38,10 +38,6 @@ for(ii in 1:length(targets.P[[1]])){
   
   #Choose the drug treatments matching to the drug targets
   #and match to what is present in the background network
-  # data.P<-dataBycond(dataGMM, bg,scaled=TRUE,rowBycond=list(cond1=c("MTOR1 - Control", "MTOR2 - Control", "AKT1 - Control", "AKT2 - Control")))
-  # experiments <- list(cond1=c("MTOR1 - Control", "MTOR2 - Control", "AKT1 - Control", "AKT2 - Control"))
-  # data.P<-dataBycond(dataGMM, bg,scaled=TRUE,rowBycond=list(cond1=rownames(GMM.res[[1]])[c(2,3,12,13,16,17)]))
-  # experiments <- list(cond1=rownames(GMM.res[[1]])[c(2,3,12,13,16,17)])
   data.P <- dataBycond(dataGMM, bg, scaled = TRUE, rowBycond = conditions[which(names(conditions)==targets[[1]])])
   experiments <- conditions[which(names(conditions)==targets[[1]])]
   
@@ -69,14 +65,6 @@ for(ii in 1:length(targets.P[[1]])){
   
   
   show(pknList)
-  
-  # dataGMM@IDmap <- dataGMM@IDmap[-which(duplicated(dataGMM@IDmap$S.cc)), ]
-  # for(i in 1:length(which(duplicated(dataGMM@IDmap$S.cc)))){
-  #   
-  #   dataGMM@res[-which(names(dataGMM@res)==dataGMM@IDmap$dataID[which(duplicated(dataGMM@IDmap$S.cc))[i]])]
-  #   dataGMM@resFC[-which(names(dataGMM@res)==dataGMM@IDmap$dataID[which(duplicated(dataGMM@IDmap$S.cc))[i]])]
-  #   
-  # }
   
   
   ################################################################################
