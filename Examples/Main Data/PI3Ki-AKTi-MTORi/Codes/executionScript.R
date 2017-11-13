@@ -51,12 +51,7 @@ for(ii in 1:length(targets.P[[1]])){
   if(length(idx) > 0){
     
     for(i in 1:length(idx)){
-      
-      # kinase <- pknList@interactions[idx[i], ]$K.ID
-      # substrate <- pknList@interactions[idx[i], ]$S.cc
-      
-      # rem <- c(rem, intersect(which(pknList@interactions$K.ID==pknList@interactions[idx[1], ]$S.cc), which(pknList@interactions$S.cc==pknList@interactions[idx[1], ]$K.ID)))
-      
+     
       pknList@interactions <- pknList@interactions[-intersect(which(pknList@interactions$K.ID==pknList@interactions[idx[i], ]$S.cc), which(pknList@interactions$S.cc==pknList@interactions[idx[i], ]$K.ID)), ]
       
     }
