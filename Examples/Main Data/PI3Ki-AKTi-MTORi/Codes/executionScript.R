@@ -22,7 +22,7 @@ dataGMM<-new("GMMres", res=GMM.res.noFC, IDmap=GMM.res.ID, resFC=GMM.res)
 conditions <- list(c("AKT1 - Control", "AKT2 - Control"), c("CAMK1 - Control", "CAMK2 - Control"),
                     c("EGFR1 - Control", "EGFR2 - Control"), c("ERK1 - Control", "ERK2 - Control"),
                     c("MEK1 - Control", "MEK2 - Control"), c("MTOR1 - Control", "MTOR2 - Control"),
-                    c("P70S6K1 - Control", "P70S6K2 - Control"), c("PI3K2 - Control", "PI3K2 - Control"),
+                    c("P70S6K1 - Control", "P70S6K2 - Control"), c("PI3K1 - Control", "PI3K2 - Control"),
                     c("PKC1 - Control", "PKC2 - Control"), c("ROCK1 - Control", "ROCK2 - Control"))
 
 names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
@@ -31,15 +31,31 @@ names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
 
 #Choose the drug targets
 resultsSIF <- matrix(, nrow = 1, ncol = 3)
-targets.P<-list(cond1=c("MTOR_HUMAN", "AKT1_HUMAN", "PK3CA_HUMAN"))
-for(ii in 1:length(targets.P[[1]])){
+measuredSites <- c()
+
+targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c(), cond3=c(), cond4=c(),
+                cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"),
+                cond9=c(), cond10=c())
+
+for(ii in 1:length(unique(unlist(targets.P)))){
   
-  targets <- list(cond1=c(targets.P[[1]][ii]))
+  targets <- unique(unlist(targets.P))[ii]
+  
+  idx <- c()
+  for(jj in 1:length(conditions)){
+    
+    if(targets%in%targets.P[[jj]]){
+      
+      idx <- c(idx, jj)
+      
+    }
+    
+  }
   
   #Choose the drug treatments matching to the drug targets
   #and match to what is present in the background network
-  data.P <- dataBycond(dataGMM, bg, scaled = TRUE, rowBycond = conditions[which(names(conditions)==targets[[1]])])
-  experiments <- conditions[which(names(conditions)==targets[[1]])]
+  data.P <- dataBycond(dataGMM, bg, scaled = TRUE, rowBycond = conditions[idx])
+  experiments <- conditions[idx]
   
   show(data.P)
   
@@ -51,22 +67,21 @@ for(ii in 1:length(targets.P[[1]])){
   if(length(idx) > 0){
     
     for(i in 1:length(idx)){
-     
+      
       pknList@interactions <- pknList@interactions[-intersect(which(pknList@interactions$K.ID==pknList@interactions[idx[i], ]$S.cc), which(pknList@interactions$S.cc==pknList@interactions[idx[i], ]$K.ID)), ]
       
     }
     
   }
   
-  
   show(pknList)
-  
   
   ################################################################################
   #                         First step optimization                              #
   ################################################################################
   # Build the matrix wth the necessary data for all the species in the prior knowledge
   dataMatrix <- buildDataMatrix(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = experiments)
+  measuredSites <- c(measuredSites, dataMatrix$species[dataMatrix$dsID])
   
   # SIF file for the prior knowledge interactions
   sif <- createSIF(pknList = pknList)
@@ -102,10 +117,6 @@ for(ii in 1:length(targets.P[[1]])){
   
   # Putting all constraints together in one file
   allC <- all_constraints(equalityConstraints = eC, constraints1 = c1, constraints2 = c2, constraints3 = c3, constraints4 = c4, constraints5 = c5)
-  
-  # write(bounds, file = "bounds.txt")
-  # write(binaries[[1]], file = "Integers.txt")
-  # write(allC, file = "allConstraints.txt")
   
   # write the .lp file
   data = "testFile.lp"
