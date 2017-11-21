@@ -181,7 +181,11 @@ write_constraints_2 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
   for(i in 1:length(tNames)){
     
     temp <- c()
-    tAdjacent[[length(tAdjacent)+1]] <- c(temp, which(sif[, 1]==tNames[i]))
+    if(length(which(sif[, 1]==tNames[i])) > 0){
+      
+      tAdjacent[[length(tAdjacent)+1]] <- c(temp, which(sif[, 1]==tNames[i]))
+      
+    }
     
   }
   
@@ -230,7 +234,11 @@ write_constraints_3 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
   for(i in 1:length(nNames)){
     
     temp <- c()
-    nAdjacent[[length(nAdjacent)+1]] <- c(temp, which(sif[, 1]==nNames[i]))
+    if(length(which(sif[, 1]==nNames[i])) > 0){
+      
+      nAdjacent[[length(nAdjacent)+1]] <- c(temp, which(sif[, 1]==nNames[i]))
+      
+    }
     
   }
   
