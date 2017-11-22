@@ -37,10 +37,6 @@ targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c(), cond3=c(), cond4
                 cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"),
                 cond9=c(), cond10=c())
 
-# targets.P<-list(cond1=c(), cond2=c(), cond3=c(), cond4=c(),
-#                 cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("MTOR_HUMAN"),
-#                 cond9=c(), cond10=c())
-
 for(ii in 1:length(unique(unlist(targets.P)))){
   
   targets <- unique(unlist(targets.P))[ii]
