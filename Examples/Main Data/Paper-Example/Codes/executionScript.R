@@ -33,10 +33,6 @@ names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
 resultsSIF <- matrix(, nrow = 1, ncol = 3)
 measuredSites <- c()
 
-# targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c(), cond3=c(), cond4=c(),
-#                 cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"),
-#                 cond9=c(), cond10=c())
-
 targets.P<-list(cond1=c(), cond2=c(), cond3=c(), cond4=c(),
                 cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("MTOR_HUMAN"),
                 cond9=c(), cond10=c())
