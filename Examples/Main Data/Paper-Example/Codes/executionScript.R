@@ -9,9 +9,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 source("buildDataMatrix.R")
 source("ilpFunctions.R")
-source("ilpFunctions2.R")
 
-# load(file='omnipath_allD.Rdata')
 load(file='allD_noCSK_filt.RData')
 load(file='dataObjects_PHONEMeS.RData')
 
@@ -29,161 +27,95 @@ names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
                         "MP2K1_HUMAN", "MTOR_HUMAN",  "KS6B1_HUMAN", "PK3CA_HUMAN",
                         "KPCA_HUMAN", "ROCK1_HUMAN")
 
-#Choose the drug targets
-resultsSIF <- matrix(, nrow = 1, ncol = 3)
-measuredSites <- c()
-
 targets.P<-list(cond1=c(), cond2=c(), cond3=c(), cond4=c(),
-                cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("MTOR_HUMAN"),
+                cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c(),
                 cond9=c(), cond10=c())
 
-for(ii in 1:length(unique(unlist(targets.P)))){
-  
-  targets <- unique(unlist(targets.P))[ii]
-  
-  idx <- c()
-  for(jj in 1:length(conditions)){
-    
-    if(targets%in%targets.P[[jj]]){
-      
-      idx <- c(idx, jj)
-      
-    }
-    
-  }
-  
-  #Choose the drug treatments matching to the drug targets
-  #and match to what is present in the background network
-  data.P <- dataBycond(dataGMM, bg, scaled = TRUE, rowBycond = conditions[idx])
-  experiments <- conditions[idx]
-  
-  show(data.P)
-  
-  speciesP(data.P)
-  #Create the PKN list that will be used for optimisation
-  pknList<-buildNw(data.On=data.P, targets.On=targets, bg=bg,nK="no")
-  idx <- which(pknList@interactions$S.ID==pknList@interactions$K.ID)
-  rem <- c()
-  if(length(idx) > 0){
-    
-    for(i in 1:length(idx)){
-      
-      pknList@interactions <- pknList@interactions[-intersect(which(pknList@interactions$K.ID==pknList@interactions[idx[i], ]$S.cc), which(pknList@interactions$S.cc==pknList@interactions[idx[i], ]$K.ID)), ]
-      
-    }
-    
-  }
-  
-  show(pknList)
-  
-  ################################################################################
-  #                         First step optimization                              #
-  ################################################################################
-  # Build the matrix wth the necessary data for all the species in the prior knowledge
-  dataMatrix <- buildDataMatrix(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = experiments)
-  measuredSites <- c(measuredSites, dataMatrix$species[dataMatrix$dsID])
-  
-  # SIF file for the prior knowledge interactions
-  sif <- createSIF(pknList = pknList)
-  
-  # Creating lists containing all our variables
-  binary_x <- create_binary_variables_for_x_vector(dataMatrix = dataMatrix)
-  binary_y <- create_binary_variables_for_y_vector(pknList = pknList)
-  binaries <- create_binaries(binaries_x = binary_x, binaries_y = binary_y)
-  
-  # Writing the objective function
-  oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries)
-  
-  # Writing the bounds and also all the vvariables
-  bounds <- write_boundaries(binaries = binaries)
-  
-  # Writing equality constraints
-  eC <- write_equality_constraints(dataMatrix = dataMatrix, binaries = binaries)
-  
-  # Writing Constraint - 1
-  c1 <- write_constraints_1(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
-  
-  # Writing Constraint - 2
-  c2 <- write_constraints_2(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
-  
-  # Writing Constraint - 3
-  c3 <- write_constraints_3(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
-  
-  # Writing Constraint - 4
-  c4 <- write_constraints_4(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
-  
-  # Writeing Constraint - 5
-  c5 <- write_constraints_5(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
-  
-  # Putting all constraints together in one file
-  allC <- all_constraints(equalityConstraints = eC, constraints1 = c1, constraints2 = c2, constraints3 = c3, constraints4 = c4, constraints5 = c5)
-  
-  # write the .lp file
-  data = "testFile.lp"
-  write("enter Problem", data)
-  write("", data, append = TRUE)
-  write("Minimize", data, append = TRUE)
-  write(oF, data, append = TRUE)
-  write("Subject To", data, append = TRUE)
-  write(allC, data, append = TRUE)
-  write("Bounds", data, append = TRUE)
-  write(bounds, data, append = TRUE)
-  write("Binaries", data, append = TRUE)
-  write(binaries[[1]], data, append = TRUE)
-  write("End", data, append = TRUE)
-  
-  system(paste0(getwd(), "/cplex -f cplexCommand.txt"))
-  
-  
-  # Read the results from the CPLEX and do the necessary processing of the model
-  library(XML)
-  resultsSIF1 <- readOutSIF(cplexSolutionFileName = "results1.txt", binaries = binaries)
-  write.table(resultsSIF1, file = "resultsSIF1.txt", quote = FALSE, row.names = FALSE, col.names = FALSE)
-  
-  ################################################################################
-  #                         Second step optimization                             #
-  ################################################################################
-  dataMatrix2 <- buildDataMatrix2(dataMatrix = dataMatrix, sif = resultsSIF1, targets = targets, experiments = experiments)
-  binX <- create_binary_variables_for_x_vector_step_2(dataMatrix = dataMatrix2)
-  binY <- create_binary_variables_for_y_vector_step_2(sif = resultsSIF1)
-  binaries2 <- create_binaries(binaries_x = binX, binaries_y = binY)
-  oF2 <- write_objective_function_step_2Edges(binaries = binaries2, dataMatrix = dataMatrix2)
-  bounds2 <- write_boundaries_step_2(binaries = binaries2)
-  c1 <- write_fixed_nodes_constraints(dataMatrix = dataMatrix2, binaries = binaries2)
-  c2 <- write_one_edge_constraint(sif = resultsSIF1, dataMatrix = dataMatrix2, binaries = binaries2)
-  c3 <- write_intermediate_node_constraints_in(sif = resultsSIF1, dataMatrix = dataMatrix2, binaries = binaries2)
-  c4 <- write_intermediate_node_constraints_out(sif = resultsSIF1, dataMatrix = dataMatrix2, binaries = binaries2)
-  c5 <- write_reaction_constraints(dataMatrix = dataMatrix2, sif = resultsSIF1, binaries = binaries2)
-  c6 <- write_loop_constraints(resultsSIF1 = resultsSIF1, binaries = binaries2)
-  allC <- all_constraints_2(constraints1 = c1, constraints2 = c2, constraints3 = c3, constraints4 = c4, constraints5 = c5, constraints6 = c6)
-  
-  # write the .lp file
-  data = "testFile2.lp"
-  write("enter Problem", data)
-  write("", data, append = TRUE)
-  write("Minimize", data, append = TRUE)
-  write(oF2, data, append = TRUE)
-  write("Subject To", data, append = TRUE)
-  write(allC, data, append = TRUE)
-  write("Bounds", data, append = TRUE)
-  write(bounds2, data, append = TRUE)
-  write("Binaries", data, append = TRUE)
-  write(binaries2[[1]], data, append = TRUE)
-  write("End", data, append = TRUE)
-  
-  system(paste0(getwd(), "/cplex -f cplexCommand2.txt"))
-  
-  library(CellNOptR)
-  resultsSIF2 <- readOutSIF(cplexSolutionFileName = "results2.txt", binaries = binaries2)
-  resultsSIF <- rbind(resultsSIF, resultsSIF2)
+targets <- targets.P
 
-  file.remove("cplex.log")
-  # file.remove("clone1.log")
-  file.remove("results1.txt")
-  file.remove("results2.txt")
-  file.remove("testFile.lp")
-  file.remove("testFile2.lp")
-  
-}
+experiments <- conditions[c(6)]
+data.P<-dataBycond(dataGMM, bg,scaled=TRUE,rowBycond=experiments)
+show(data.P)
 
-write.table(unique(resultsSIF[-1, ]), file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+speciesP(data.P)
+
+pknList<-buildNw(data.On=data.P, targets.On=targets.P, bg=bg, nK = "no")
+
+show(pknList)
+
+################################################################################
+#                         First step optimization                              #
+################################################################################
+# Build the matrix wth the necessary data for all the species in the prior knowledge
+dataMatrix <- buildDataMatrix(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = experiments)
+
+# SIF file for the prior knowledge interactions
+sif <- createSIF(pknList = pknList)
+
+# Creating lists containing all our variables
+binary_x <- create_binary_variables_for_x_vector(dataMatrix = dataMatrix)
+binary_y <- create_binary_variables_for_y_vector(pknList = pknList)
+binaries <- create_binaries(binaries_x = binary_x, binaries_y = binary_y)
+
+# Writing the objective function
+oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries, sizePen = TRUE, penMode = "edge")
+
+# Writing the bounds and also all the vvariables
+bounds <- write_boundaries(binaries = binaries, pknList = pknList, M = 100)
+
+# Writing equality constraints
+eC <- write_equality_constraints(dataMatrix = dataMatrix, binaries = binaries)
+
+# Writing Constraint - 1
+c1 <- write_constraints_1(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
+
+# Writing Constraint - 2
+c2 <- write_constraints_2(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
+
+# Writing Constraint - 3
+c3 <- write_constraints_3(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
+
+# Writing Constraint - 4
+c4 <- write_constraints_4(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
+
+# Writeing Constraint - 5
+c5 <- write_constraints_5(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
+
+# Writeing Constraint - 6
+c6 <- write_self_activating_constraints(pknList = pknList, binaries = binaries, dataMatrix = dataMatrix, M = 100)
+
+# Putting all constraints together in one file
+allC <- all_constraints(equalityConstraints = eC, constraints1 = c1, constraints2 = c2, constraints3 = c3, constraints4 = c4, constraints5 = c5, constraints6 = c6)
+
+# write(bounds, file = "bounds.txt")
+# write(binaries[[1]], file = "Integers.txt")
+# write(allC, file = "allConstraints.txt")
+
+# write the .lp file
+data = "testFile.lp"
+write("enter Problem", data)
+write("", data, append = TRUE)
+write("Minimize", data, append = TRUE)
+write(oF, data, append = TRUE)
+write("Subject To", data, append = TRUE)
+write(allC, data, append = TRUE)
+write("Bounds", data, append = TRUE)
+write(bounds, data, append = TRUE)
+write("Binaries", data, append = TRUE)
+write(binaries[[1]], data, append = TRUE)
+write("End", data, append = TRUE)
+
+system(paste0(getwd(), "/cplex -f cplexCommand.txt"))
+
+
+# Read the results from the CPLEX and do the necessary processing of the model
+library(XML)
+resultsSIF1 <- readOutSIF(cplexSolutionFileName = "results1.txt", binaries = binaries)
+colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
+write.table(resultsSIF1, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
+
+file.remove("cplex.log")
+file.remove("results1.txt")
+file.remove("testFile.lp")
+
+resultsSIF <- resultsSIF1
