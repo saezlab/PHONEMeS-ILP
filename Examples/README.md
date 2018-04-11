@@ -14,7 +14,7 @@ The pipeline is the same for all the case studies present in the Examples reposi
 
 ## Running the scripts
 
-* By running the ```buildDataMatrix.R```, ```ilpFunctions.R``` and ```ilpFunctions2.R``` scripts you are calling the necessay functions needed to write the objective function, bounds and constraints of the ILP problem.
+* By sourcing the ```buildDataMatrix.R``` and ```ilpFunctions.R``` scripts you are calling the necessay functions needed to write the objective function, bounds and constraints of the ILP problem.
 
 * Then by running the ```executionScript.R``` you execute all the functions called from which you obtain the final *resultsSIF.txt* file which is basically the result that PHONEMeS gives you and which represents the optimal reconstructed pathway activity model and which can be visualized in Cytoscape.
 
