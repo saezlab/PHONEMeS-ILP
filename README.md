@@ -8,7 +8,7 @@ This repository contains the scripts of the ILP (Integer Linear Programming) imp
 
 ### License
 
-Distributed under the GNU GPLv2 License. See accompanying file [LICENSE.txt](https://github.com/saezlab/PHONEMeS/blob/master/LICENSE.txt) or copy at https://www.gnu.org/licenses/gpl-2.0.html.
+Distributed under the GNU GPLv3 License. See accompanying file [LICENSE.txt](https://github.com/saezlab/PHONEMeS-ILP/blob/master/LICENSE).
 
 ### Installation
 
