@@ -1,4 +1,0 @@
-read testFile2.lp
-optimize
-write results2.txt sol
-quit
