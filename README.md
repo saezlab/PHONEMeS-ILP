@@ -25,12 +25,6 @@ Other supportive R packages needed are:
 install.packages("igraph")
 ```
 
-*BioNet* which you can easily install by typing in R the below line:
-```R
-source("https://bioconductor.org/biocLite.R")
-biocLite("BioNet")
-```
-
 *XML* which can be downloaded [here](https://cran.r-project.org/src/contrib/XML_3.98-1.9.tar.gz) and then you can install by typing in R:
 
 ```R
