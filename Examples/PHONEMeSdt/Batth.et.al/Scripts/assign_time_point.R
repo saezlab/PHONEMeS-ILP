@@ -1,3 +1,22 @@
+#
+#  This file is part of the PHONEMeS-ILP method
+#
+#  Copyright (c) 2018 - RWTH Aachen - JRC COMBINE
+#
+#  File author(s): E.Gjerga (enio.gjerga@gmail.com)
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  PHONEMeS website: https://saezlab.github.io/PHONEMeS/
+#
+##############################################################################
+# $Id$
+
+# Script to run after PHONEMeS analysis to assign a time-point as an attribute
+# to each edge in the network
+
 #load the packages
 library(BioNet)
 library(igraph)
