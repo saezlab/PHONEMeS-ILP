@@ -1,4 +1,4 @@
-runPHONEMeS <- function(targets.P = targets.P, conditions = conditions, dataGMM = dataGMM, experiments = experiments, nK = nK){
+runPHONEMeS <- function(targets.P = targets.P, conditions = conditions, dataGMM = dataGMM, experiments = experiments, nK = nK, solver="cplex"){
   
   data.P<-dataBycond(dataGMM, bg,scaled=TRUE,rowBycond=conditions[experiments])
   show(data.P)
@@ -76,18 +76,58 @@ runPHONEMeS <- function(targets.P = targets.P, conditions = conditions, dataGMM 
     write(binaries[[1]], data, append = TRUE)
     write("End", data, append = TRUE)
     
-    system(paste0(getwd(), "/cplex -f cplexCommand.txt"))
-    
-    
-    # Read the results from the CPLEX and do the necessary processing of the model
-    library(XML)
-    resultsSIF1 <- readOutSIF(cplexSolutionFileName = "results1.txt", binaries = binaries)
-    colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
-    # write.table(resultsSIF1, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
-    
-    file.remove("cplex.log")
-    file.remove("results1.txt")
-    file.remove("testFile.lp")
+    if (solver=="cplex"){
+      system(paste0(getwd(), "/cplex -f cplexCommand.txt"))
+      
+      # Read the results from the CPLEX and do the necessary processing of the model
+      library(XML)
+      resultsSIF1 <- readOutSIF(cplexSolutionFileName = "results1.txt", binaries = binaries)
+      colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
+      # write.table(resultsSIF1, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
+      
+      # clean-up temporary files
+      file.remove("cplex.log")
+      file.remove("results1.txt")
+      file.remove("testFile.lp")
+    } else if (solver=="cbc"){
+      cbc_command <- "cbc testFile.lp solve printi csv solu results_cbc.txt"
+      system(cbc_command)
+      
+      # retrieve solution
+      readCbcSolution <- function(file, binaries){
+        library("dplyr")
+        library("tidyr")
+        
+        # read cbc solution file
+        cbc_table <- read.csv("results_cbc.txt")
+        
+        # find mapping of variables from the MILP to the model
+        mapping_table <- data.frame(binaries)
+        colnames(mapping_table) <- c("milp", "math", "description")
+        # keep only reaction variables
+        mapping_table <- mapping_table %>% filter(grepl("reaction", description))
+        # merge with solution
+        cbc_table <- merge(cbc_table, mapping_table, by.x="name", by.y="milp")
+        # keep only active reactions
+        cbc_table <- cbc_table %>% mutate(solution=round(as.numeric(solution))) %>% 
+          filter(solution==1)
+        # create SIF table
+        sif <- cbc_table %>% select(description) %>% 
+          mutate(description = gsub("reaction ", "", description)) %>% 
+          separate(description, into=c("Source", "Target"), sep="=") %>% 
+          mutate(Interaction = 1) %>% 
+          select(Source, Interaction, Target)
+        
+        return(sif)
+      }
+      resultsSIF1 <- readCbcSolution("results_cbc.txt", binaries)
+      
+      # clean-up temporary files
+      file.remove("results_cbc.txt")
+      file.remove("testFile.lp")
+    } else {
+      stop("Select a valid solver option ('cplex', 'cbc')")
+    }
     
     resultsSIF <- resultsSIF1
     
