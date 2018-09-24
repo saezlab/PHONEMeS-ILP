@@ -1,0 +1,1 @@
+Example with single condition
