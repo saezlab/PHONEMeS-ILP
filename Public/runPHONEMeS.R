@@ -79,7 +79,7 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
       if(ii==1){
         resultsSIF <- resultsSIF1
       } else {
-        resultsSIF <- unique(rbind(resultsSIF, resultsSIF1))
+        resultsSIF <- distinct(rbind(resultsSIF, resultsSIF1))
       }
       
     }
