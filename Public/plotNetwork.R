@@ -54,71 +54,75 @@ plotFormattedNetworkGgraph <- function(tree, repel=TRUE){
   return(plt)
 }
 
-# test code
-tree <- create_tree(20, 3)
-tree <- tree %>% 
-  activate(nodes) %>% 
-  mutate(Species=sort(unique(c(.E()$from, .E()$to)))) %>% 
-  mutate(nodesP="") %>%
-  mutate(nodesP=ifelse(Species>15, "D", nodesP)) %>% 
-  mutate(nodesP=ifelse(Species==1, "P", nodesP))
-tree %>% plotFormattedNetworkGgraph() %>% print()
+# # test code for the development of the ggraph plotting function
+# tree <- create_tree(20, 3)
+# tree <- tree %>% 
+#   activate(nodes) %>% 
+#   mutate(Species=sort(unique(c(.E()$from, .E()$to)))) %>% 
+#   mutate(nodesP="") %>%
+#   mutate(nodesP=ifelse(Species>15, "D", nodesP)) %>% 
+#   mutate(nodesP=ifelse(Species==1, "P", nodesP))
+# tree %>% plotFormattedNetworkGgraph() %>% print()
 
 
 # TODO: Finish code for plotting with Cytoscape
 # note: the use of yFiles layouts is not possible because of licensing issues
 # See https://github.com/cytoscape/cyREST/issues/36
-# Plotting PHONEMeS networks using RCy3
-library("RCy3")
-
-plotNetwork <- function(resultsSIF, dataGMM, targets.P, ...){
+# Do not execute this part of the code as long as the implementation using RCy3
+# is not finished.
+if (FALSE){
+  # Plotting PHONEMeS networks using RCy3
+  library("RCy3")
   
-  is_cytoscape_running()
+  plotNetworkRCy3 <- function(resultsSIF, dataGMM, targets.P, ...){
+    
+    is_cytoscape_running()
+    
+    # list of nodes in the network to plot
+    list_of_nodes <- unique(c(resultsSIF$Source, resultsSIF$Target))
+    
+    list_of_targets <- as.character(unlist(targets.P))
+    
+    # nodes that appear in the data
+    GMM.ID <- dataGMM@IDmap
+    sites <- intersect(GMM.ID$S.cc, list_of_nodes)
+    
+    # annotate nodes as perturbed (P) or targeted by the drug applied in the experiment (D)
+    nodes_attributes <- data.frame(Species=list_of_nodes)
+    nodes_attributes <- nodes_attributes %>% mutate(nodesP="")
+    nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% sites, "P", nodesP))
+    nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% list_of_targets, "D", nodesP))
+    
+    plotFormattedNetwork(network_df, ...)
+  }
   
-  # list of nodes in the network to plot
-  list_of_nodes <- unique(c(resultsSIF$Source, resultsSIF$Target))
   
-  list_of_targets <- as.character(unlist(targets.P))
+  plotFormattedNetwork <- function(network_df, title="network", collection="Example"){
+    
+  }
   
-  # nodes that appear in the data
-  GMM.ID <- dataGMM@IDmap
-  sites <- intersect(GMM.ID$S.cc, list_of_nodes)
+  is_cytoscape_running <- function(){
+    tryCatch(
+      {
+        cytoscapePing()
+        return(TRUE)
+      }, error=function(error_message){
+        message("Cytoscape needs to be running in the background.")
+        message("Please, open Cytoscape before calling this function.")
+        message(error_message)
+        return(FALSE)
+      }
+    )
+  }
   
-  # annotate nodes as perturbed (P) or targeted by the drug applied in the experiment (D)
-  nodes_attributes <- data.frame(Species=list_of_nodes)
-  nodes_attributes <- nodes_attributes %>% mutate(nodesP="")
-  nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% sites, "P", nodesP))
-  nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% list_of_targets, "D", nodesP))
-  
-  plotFormattedNetwork(network_df, ...)
-}
-
-
-plotFormattedNetwork <- function(network_df, title="network", collection="Example"){
-  
-}
-
-is_cytoscape_running <- function(){
-  tryCatch(
-    {
-      cytoscapePing()
-      return(TRUE)
-    }, error=function(error_message){
-      message("Cytoscape needs to be running in the background.")
-      message("Please, open Cytoscape before calling this function.")
-      message(error_message)
-      return(FALSE)
-    }
-  )
-}
-
-applyPhonemesStyle() <- function(){
-  
-  # node shape
-  column <- 'nodesP'
-  values <- c ('',  'D','P')
-  shapes <- c ('ELLIPSE', 'DIAMOND', 'HEXAGON')
-  setNodeShapeMapping (column, values, shapes)
-  
-  # node color
+  applyPhonemesStyle() <- function(){
+    
+    # node shape
+    column <- 'nodesP'
+    values <- c ('',  'D','P')
+    shapes <- c ('ELLIPSE', 'DIAMOND', 'HEXAGON')
+    setNodeShapeMapping (column, values, shapes)
+    
+    # node color
+  }
 }
