@@ -24,11 +24,11 @@ plotNetwork <- function(resultsSIF, dataGMM, targets.P, ...){
   
   resultsSIF <- resultsSIF %>% mutate(from=Source, to=Target)
   tree <- tbl_graph(nodes=nodes_attributes, edges=resultsSIF, directed=TRUE)
-  plt <- plotFormattedNetworkGgraph(tree)
+  plt <- plotFormattedNetworkGgraph(tree, ...)
   print(plt)
 }
 
-plotFormattedNetworkGgraph <- function(tree){
+plotFormattedNetworkGgraph <- function(tree, repel=TRUE){
   # shape and colour definition linked to `nodesP`
   node_definition <- data.frame(nodesP=c("", "D", "P"), 
                                  shape=c("circle", "triangle", "diamond"),
@@ -48,7 +48,8 @@ plotFormattedNetworkGgraph <- function(tree){
     geom_edge_link(arrow = arrow(length = unit(4, "mm")), 
                    start_cap = circle(3, "mm"),
                    end_cap = circle(3, "mm")) + 
-    geom_node_text(aes(label=Species), repel=TRUE)
+    geom_node_text(aes(label=Species), repel=repel) +
+    theme_graph()
   
   return(plt)
 }
