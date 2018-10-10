@@ -10,7 +10,7 @@
 #' @param solver Solver to use for solving the ILP.
 #
 #' @return SIF like data.frame with the output network.
-runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex"){
+runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex", all.targets.together=FALSE){
   
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
@@ -30,7 +30,7 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
   
   TG <- unique(unlist(targets.P))
   
-  if(length(TG)==1){
+  if(length(TG)==1 || all.targets.together){
     
     targets <- targets.P
     
@@ -59,7 +59,7 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
       
       targets <- targets.P[[idxT]][which(targets.P[[idxT]]==TG[ii])]
       
-      experiments <- idxT
+      # experiments <- idxT  # This line is most likely a bug
       
       tt <- list()
       tt[[1]] <- targets
