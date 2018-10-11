@@ -1,19 +1,3 @@
-#
-#  This file is part of the CNO software
-#
-#  Copyright (c) 2018 - RWTH Aachen - JRC COMBINE
-#
-#  File author(s): E. Gjerga (enio.gjerga@gmail.com)
-#
-#  Distributed under the GPLv3 License.
-#  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
-#
-#  CNO website: https://saezlab.github.io/PHONEMeS/
-#
-##############################################################################
-# $Id$
-
 #' Run PHONEMeS ILP
 #' 
 #' @param Arguments 
@@ -28,12 +12,13 @@
 #' @return SIF like data.frame with the output network.
 runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex"){
   
+  conditions <- conditions[experiments]
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
     stop(paste0("Select a valid solver option (", paste(valid_solver_list, collapse=", "), ")"))
   }
   
-  data.P <- dataBycond(dataGMM, bg, scaled=TRUE, rowBycond=conditions[experiments])
+  data.P <- dataBycond(dataGMM, bg, scaled=TRUE, rowBycond=conditions)
   show(data.P)
   
   speciesP(data.P)
@@ -50,7 +35,7 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
     
     targets <- targets.P
     
-    write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions[experiments])
+    write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions)
     
     if (solver=="cplex"){
       resultsSIF1 <- solve_with_cplex()
@@ -73,22 +58,7 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
         }
       }
       
-      # targets <- targets.P[[idxT]][which(targets.P[[idxT]]==TG[ii])]
-      targets <- list()
-      for(jj in 1:length(idxT)){
-        
-        targets[[length(targets)+1]] <- unique(unlist(targets.P))[ii]
-        
-      }
-      
-      experiments <- idxT
-      
-      # tt <- list()
-      # tt[[1]] <- targets
-      # targets <- tt
-      names(targets) <- names(targets.P)[idxT]
-      
-      write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions[experiments])
+      write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets.P[idxT], experiments = conditions[idxT])
       
       if (solver=="cplex"){
         resultsSIF1 <- solve_with_cplex()
@@ -101,37 +71,15 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
       if(ii==1){
         resultsSIF <- resultsSIF1
       } else {
-        resultsSIF <- unique(rbind(resultsSIF, resultsSIF1))
+        resultsSIF <- distinct(rbind(resultsSIF, resultsSIF1))
       }
       
     }
     
   }
   
-  if(length(which(duplicated(resultsSIF[, c(1, 3)]))) > 0){
-    
-    returnSIF <- resultsSIF[-which(duplicated(resultsSIF[, c(1, 3)])), ]
-    
-    for(ii in nrow(returnSIF)){
-      
-      idx1 <- which(resultsSIF[, 1]==returnSIF[ii, 1])
-      idx2 <- which(resultsSIF[, 3]==returnSIF[ii, 3])
-      
-      idx <- intersect(x = idx1, y = idx2)
-      
-      returnSIF[ii, 2] <- as.character(mean(as.numeric(resultsSIF[idx, 2])))
-      
-    }
-    
-  } else {
-    
-    returnSIF <- resultsSIF
-    
-  }
-  
-  colnames(returnSIF) <- c("Source", "Weight", "Target")
-  
-  return(returnSIF)
+  # write.table(resultsSIF, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
+  return(resultsSIF)
   
 }
 
@@ -211,34 +159,13 @@ solve_with_cplex <- function(){
   
   # Read the results from the CPLEX and do the necessary processing of the model
   library(XML)
-  resultsSIF1 <- readOutSIFAll(cplexSolutionFileName = "results1.txt", binaries = binaries)
-  if(length(which(duplicated(resultsSIF1[, c(1, 3)]))) > 0){
-    
-    returnSIF <- resultsSIF1[-which(duplicated(resultsSIF1[, c(1, 3)])), ]
-    
-    for(ii in nrow(returnSIF)){
-      
-      idx1 <- which(resultsSIF1[, 1]==returnSIF[ii, 1])
-      idx2 <- which(resultsSIF1[, 3]==returnSIF[ii, 3])
-      
-      idx <- intersect(x = idx1, y = idx2)
-      
-      returnSIF[ii, 2] <- as.character(mean(as.numeric(resultsSIF1[idx, 2])))
-      
-    }
-    
-  } else {
-    
-    returnSIF <- resultsSIF1
-    
-  }
+  resultsSIF1 <- readOutSIF(cplexSolutionFileName = "results1.txt", binaries = binaries)
+  colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
+  # write.table(resultsSIF1, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
   
-  colnames(returnSIF) <- c("Source", "Weight", "Target")
-  
-  resultsSIF1 <- returnSIF
   # change format to data.frame
   resultsSIF1 <- data.frame(resultsSIF1, stringsAsFactors=FALSE)
-  resultsSIF1 <- resultsSIF1 %>% mutate(Weight=as.numeric(Weight))
+  resultsSIF1 <- resultsSIF1 %>% mutate(Interaction=as.numeric(Interaction))
   
   # clean-up temporary files
   file.remove("cplex.log")
@@ -279,8 +206,8 @@ solve_with_cbc <- function(){
     sif <- cbc_table %>% select(description) %>% 
       mutate(description = gsub("reaction ", "", description)) %>% 
       separate(description, into=c("Source", "Target"), sep="=") %>% 
-      mutate(Weight = 1) %>% 
-      select(Source, Weight, Target)
+      mutate(Interaction = 1) %>% 
+      select(Source, Interaction, Target)
     
     return(sif)
   }
