@@ -28,12 +28,13 @@
 #' @return SIF like data.frame with the output network.
 runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex"){
   
+  conditions <- conditions[experiments]
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
     stop(paste0("Select a valid solver option (", paste(valid_solver_list, collapse=", "), ")"))
   }
   
-  data.P <- dataBycond(dataGMM, bg, scaled=TRUE, rowBycond=conditions[experiments])
+  data.P <- dataBycond(dataGMM, bg, scaled=TRUE, rowBycond=conditions)
   show(data.P)
   
   speciesP(data.P)
@@ -73,22 +74,7 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
         }
       }
       
-      # targets <- targets.P[[idxT]][which(targets.P[[idxT]]==TG[ii])]
-      targets <- list()
-      for(jj in 1:length(idxT)){
-        
-        targets[[length(targets)+1]] <- unique(unlist(targets.P))[ii]
-        
-      }
-      
-      experiments <- idxT
-      
-      # tt <- list()
-      # tt[[1]] <- targets
-      # targets <- tt
-      names(targets) <- names(targets.P)[idxT]
-      
-      write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions[experiments])
+      write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets.P[idxT], experiments = conditions[idxT])
       
       if (solver=="cplex"){
         resultsSIF1 <- solve_with_cplex()
