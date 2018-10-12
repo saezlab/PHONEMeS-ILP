@@ -31,6 +31,8 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
   
   TG <- unique(unlist(targets.P))
   
+  sifList <- list()
+  
   if(length(TG)==1){
     
     targets <- targets.P
@@ -68,10 +70,48 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
         stop("Select a valid solver option ('cplex', 'cbc')")
       }
       
-      if(ii==1){
-        resultsSIF <- resultsSIF1
-      } else {
-        resultsSIF <- distinct(rbind(resultsSIF, resultsSIF1))
+      # if(ii==1){
+      #   resultsSIF <- resultsSIF1
+      # } else {
+      #   resultsSIF <- distinct(rbind(resultsSIF, resultsSIF1))
+      # }
+      
+      sifList[[length(sifList)+1]] <- resultsSIF1
+      
+    }
+    
+    interactions <- sifList[[1]][, c(1, 3)]
+    for(ii in 2:length(sifList)){
+      
+      interactions <- unique(rbind(interactions, sifList[[ii]][, c(1, 3)]))
+      
+    }
+    
+    resultsSIF <- matrix(data = , nrow = nrow(interactions), ncol = 3)
+    resultsSIF[, 1] <- interactions[, 1]
+    resultsSIF[, 3] <- interactions[, 2]
+    for(ii in 1:nrow(interactions)){
+      
+      ss <- interactions[ii, 1]
+      tt <- interactions[ii, 2]
+      
+      weight <- c()
+      for(jj in 1:length(sifList)){
+        
+        idx <- intersect(x = which(sifList[[jj]][, 1]==ss), y = which(sifList[[jj]][, 3]==tt))
+        
+        if(length(idx) > 0){
+          
+          weight <- c(weight, as.numeric(sifList[[jj]][idx, 2]))
+          
+        } else {
+          
+          weight <- c(weight, 0)
+          
+        }
+        
+        resultsSIF[ii, 2] <- as.character(sum(weight)/length(sifList))
+        
       }
       
     }
@@ -159,7 +199,7 @@ solve_with_cplex <- function(){
   
   # Read the results from the CPLEX and do the necessary processing of the model
   library(XML)
-  resultsSIF1 <- readOutSIF(cplexSolutionFileName = "results1.txt", binaries = binaries)
+  resultsSIF1 <- readOutSIFAll(cplexSolutionFileName = "results1.txt", binaries = binaries)
   colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
   # write.table(resultsSIF1, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
   
