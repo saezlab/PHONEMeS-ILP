@@ -10,14 +10,15 @@
 #' @param solver Solver to use for solving the ILP.
 #
 #' @return SIF like data.frame with the output network.
-runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex", all.targets.together=FALSE){
+runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex"){
   
+  conditions <- conditions[experiments]
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
     stop(paste0("Select a valid solver option (", paste(valid_solver_list, collapse=", "), ")"))
   }
   
-  data.P <- dataBycond(dataGMM, bg, scaled=TRUE, rowBycond=conditions[experiments])
+  data.P <- dataBycond(dataGMM, bg, scaled=TRUE, rowBycond=conditions)
   show(data.P)
   
   speciesP(data.P)
@@ -30,11 +31,11 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
   
   TG <- unique(unlist(targets.P))
   
-  if(length(TG)==1 || all.targets.together){
+  if(length(TG)==1){
     
     targets <- targets.P
     
-    write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions[experiments])
+    write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions)
     
     if (solver=="cplex"){
       resultsSIF1 <- solve_with_cplex()
@@ -57,17 +58,8 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
         }
       }
       
-      targets <- targets.P[[idxT]][which(targets.P[[idxT]]==TG[ii])]
+      write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets.P[idxT], experiments = conditions[idxT])
       
-      # experiments <- idxT  # This line is most likely a bug
-      
-      tt <- list()
-      tt[[1]] <- targets
-      targets <- tt
-      names(targets) <- names(targets.P)[idxT]
-      
-      write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions[experiments])
-
       if (solver=="cplex"){
         resultsSIF1 <- solve_with_cplex()
       } else if (solver=="cbc"){
