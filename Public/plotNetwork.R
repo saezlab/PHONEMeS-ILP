@@ -6,29 +6,41 @@ library("tidygraph")
 library("ggraph")
 
 
-plotNetwork <- function(resultsSIF, dataGMM, targets.P, ...){
-  # list of nodes in the network to plot
-  list_of_nodes <- unique(c(resultsSIF$Source, resultsSIF$Target))
+plotNetwork <- function(resultsSIF, dataGMM, targets.P, print=TRUE, ...){
+  # annotate nodes as perturbed (P) or targeted by the drug applied in the experiment (D)
+  nodes_attributes <- annotate_nodes_from_resultsSIF(resultsSIF, dataGMM, targets.P)
+    
+  # use `tidygraph` for representing the network
+  resultsSIF <- resultsSIF %>% mutate(from=Source, to=Target)
+  tree <- tbl_graph(nodes=nodes_attributes, edges=resultsSIF, directed=TRUE)
+  plt <- plotFormattedNetworkGgraph(tree, ...)
   
+  # plot directly or return the ggraph plot object, which can be modified further
+  if (print){
+    print(plt)
+  } else {
+    return(plt)
+  }
+}
+
+annotate_nodes_from_resultsSIF <- function(resultsSIF, dataGMM, targets.P){
+  list_of_nodes <- unique(c(resultsSIF$Source, resultsSIF$Target))
   list_of_targets <- as.character(unlist(targets.P))
   
   # nodes that appear in the data
   GMM.ID <- dataGMM@IDmap
   sites <- intersect(GMM.ID$S.cc, list_of_nodes)
-
+  
   # annotate nodes as perturbed (P) or targeted by the drug applied in the experiment (D)
   nodes_attributes <- data.frame(Species=list_of_nodes)
   nodes_attributes <- nodes_attributes %>% mutate(nodesP="")
   nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% sites, "P", nodesP))
   nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% list_of_targets, "D", nodesP))
   
-  resultsSIF <- resultsSIF %>% mutate(from=Source, to=Target)
-  tree <- tbl_graph(nodes=nodes_attributes, edges=resultsSIF, directed=TRUE)
-  plt <- plotFormattedNetworkGgraph(tree, ...)
-  print(plt)
+  return(nodes_attributes)
 }
 
-plotFormattedNetworkGgraph <- function(tree, repel=TRUE){
+plotFormattedNetworkGgraph <- function(tree, layout="tree", repel=TRUE){
   # shape and colour definition linked to `nodesP`
   node_definition <- data.frame(nodesP=c("", "D", "P"), 
                                  shape=c("circle", "triangle", "diamond"),
@@ -39,7 +51,7 @@ plotFormattedNetworkGgraph <- function(tree, repel=TRUE){
   names(shape_def) <- as.character(node_definition$nodesP)
   
   # plot network
-  plt <- ggraph(tree, layout="tree") + 
+  plt <- ggraph(tree, layout=layout) + 
     geom_node_point(size = 10, 
                     aes(shape=nodesP, colour=nodesP),
                     show.legend = FALSE) +
@@ -48,7 +60,8 @@ plotFormattedNetworkGgraph <- function(tree, repel=TRUE){
     geom_edge_link(arrow = arrow(length = unit(4, "mm")), 
                    start_cap = circle(3, "mm"),
                    end_cap = circle(3, "mm")) + 
-    geom_node_text(aes(label=Species), repel=repel) +
+    #geom_node_text(aes(label=Species), repel=repel) +
+    geom_node_label(aes(label=Species), repel=repel) +
     theme_graph()
   
   return(plt)
@@ -56,14 +69,16 @@ plotFormattedNetworkGgraph <- function(tree, repel=TRUE){
 
 # # test code for the development of the ggraph plotting function
 # tree <- create_tree(20, 3)
-# tree <- tree %>% 
-#   activate(nodes) %>% 
-#   mutate(Species=sort(unique(c(.E()$from, .E()$to)))) %>% 
+# tree <- tree %>%
+#   activate(nodes) %>%
+#   mutate(Species=sort(unique(c(.E()$from, .E()$to)))) %>%
 #   mutate(nodesP="") %>%
-#   mutate(nodesP=ifelse(Species>15, "D", nodesP)) %>% 
+#   mutate(nodesP=ifelse(Species>15, "D", nodesP)) %>%
 #   mutate(nodesP=ifelse(Species==1, "P", nodesP))
 # tree %>% plotFormattedNetworkGgraph() %>% print()
-
+# # if the tree contains a feedback loop, a warning message is displayed
+# # and the final plot may not be usable
+# tree2 <- tree %>% bind_edges(data.frame(from=20, to=2))
 
 # TODO: Finish code for plotting with Cytoscape
 # note: the use of yFiles layouts is not possible because of licensing issues
