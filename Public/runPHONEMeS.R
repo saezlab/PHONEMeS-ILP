@@ -1,3 +1,6 @@
+library("dplyr")
+library("tidyr")
+
 #' Run PHONEMeS ILP
 #' 
 #' @param Arguments 
@@ -183,9 +186,6 @@ solve_with_cbc <- function(){
   
   # retrieve solution
   readCbcSolution <- function(file, binaries){
-    library("dplyr")
-    library("tidyr")
-    
     # read cbc solution file
     cbc_table <- read.csv("results_cbc.txt")
     
