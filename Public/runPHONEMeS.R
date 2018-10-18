@@ -13,10 +13,10 @@ library("tidyr")
 #' @param solver Solver to use for solving the ILP.
 #
 #' @return SIF like data.frame with the output network.
-runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex"){
+runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex_pool"){
   
   conditions <- conditions[experiments]
-  valid_solver_list <- c("cplex", "cbc")
+  valid_solver_list <- c("cplex_pool", "cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
     stop(paste0("Select a valid solver option (", paste(valid_solver_list, collapse=", "), ")"))
   }
@@ -40,12 +40,12 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
     
     write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions)
     
-    if (solver=="cplex"){
+    if (solver=="cplex_pool"){
+      resultsSIF1 <- solve_with_cplex_pool()
+    } else if (solver=="cplex"){
       resultsSIF1 <- solve_with_cplex()
     } else if (solver=="cbc"){
       resultsSIF1 <- solve_with_cbc()
-    } else {
-      stop("Select a valid solver option ('cplex', 'cbc')")
     }
     
     resultsSIF <- resultsSIF1
@@ -151,6 +151,32 @@ write_lp_file <- function(dataGMM, pknList, targets, experiments){
   write("Binaries", data, append = TRUE)
   write(binaries[[1]], data, append = TRUE)
   write("End", data, append = TRUE)
+}
+
+
+solve_with_cplex_pool <- function(){
+  system(paste0(getwd(), "/cplex -f cplexCommand_pool.txt"))
+  
+  # load mapping information
+  binaries <- readRDS("tmp_binaries.rds")
+  
+  # Read the results from the CPLEX and do the necessary processing of the model
+  library(XML)
+  resultsSIF1 <- readOutSIFAll(cplexSolutionFileName = "results1.txt", binaries = binaries)
+  colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
+  # write.table(resultsSIF1, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
+  
+  # change format to data.frame
+  resultsSIF1 <- data.frame(resultsSIF1, stringsAsFactors=FALSE)
+  resultsSIF1 <- resultsSIF1 %>% mutate(Interaction=as.numeric(Interaction))
+  
+  # clean-up temporary files
+  file.remove("cplex.log")
+  file.remove("results1.txt")
+  file.remove("testFile.lp")
+  file.remove("tmp_binaries.rds")
+  
+  return(resultsSIF1)
 }
 
 
