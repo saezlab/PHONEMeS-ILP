@@ -63,12 +63,12 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
       
       write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets.P[idxT], experiments = conditions[idxT])
       
-      if (solver=="cplex"){
+      if (solver=="cplex_pool"){
+        resultsSIF1 <- solve_with_cplex_pool()
+      } else if (solver=="cplex"){
         resultsSIF1 <- solve_with_cplex()
       } else if (solver=="cbc"){
         resultsSIF1 <- solve_with_cbc()
-      } else {
-        stop("Select a valid solver option ('cplex', 'cbc')")
       }
       
       if(ii==1){
