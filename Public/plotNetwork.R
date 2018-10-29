@@ -93,27 +93,43 @@ if (FALSE){
     
     is_cytoscape_running()
     
-    # list of nodes in the network to plot
-    list_of_nodes <- unique(c(resultsSIF$Source, resultsSIF$Target))
-    
-    list_of_targets <- as.character(unlist(targets.P))
-    
-    # nodes that appear in the data
-    GMM.ID <- dataGMM@IDmap
-    sites <- intersect(GMM.ID$S.cc, list_of_nodes)
-    
     # annotate nodes as perturbed (P) or targeted by the drug applied in the experiment (D)
-    nodes_attributes <- data.frame(Species=list_of_nodes)
-    nodes_attributes <- nodes_attributes %>% mutate(nodesP="")
-    nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% sites, "P", nodesP))
-    nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% list_of_targets, "D", nodesP))
+    nodes_attributes <- annotate_nodes_from_resultsSIF(resultsSIF, dataGMM, targets.P)
     
-    plotFormattedNetwork(network_df, ...)
+    # use `tidygraph` for representing the network
+    resultsSIF <- resultsSIF %>% mutate(from=Source, to=Target)
+    tree <- tbl_graph(nodes=nodes_attributes, edges=resultsSIF, directed=TRUE)
+    session_id <- plotFormattedNetworkRCy3(tree, ...)
+    
+    
+    # # list of nodes in the network to plot
+    # list_of_nodes <- unique(c(resultsSIF$Source, resultsSIF$Target))
+    # 
+    # list_of_targets <- as.character(unlist(targets.P))
+    # 
+    # # nodes that appear in the data
+    # GMM.ID <- dataGMM@IDmap
+    # sites <- intersect(GMM.ID$S.cc, list_of_nodes)
+    # 
+    # # annotate nodes as perturbed (P) or targeted by the drug applied in the experiment (D)
+    # nodes_attributes <- data.frame(Species=list_of_nodes)
+    # nodes_attributes <- nodes_attributes %>% mutate(nodesP="")
+    # nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% sites, "P", nodesP))
+    # nodes_attributes <- nodes_attributes %>% mutate(nodesP=ifelse(Species %in% list_of_targets, "D", nodesP))
+    # 
+    # plotFormattedNetwork(network_df, ...)
   }
   
   
-  plotFormattedNetwork <- function(network_df, title="network", collection="Example"){
-    
+  plotFormattedNetworkRCy3 <- function(network_df, title="network", collection="Example"){
+    network_df <- network_df %>% activate(nodes) %>% mutate(id=Species)
+    network_df <- network_df %>% activate(edges) %>% 
+      mutate(source=Source, target=Target, interaction=Interaction)
+    #session_id <- createNetworkFromIgraph(network_df, title=title, collection=collection)
+    node_df <- network_df %>% activate(nodes) %>% as.data.frame()
+    edge_df <- network_df %>% activate(edges) %>% as.data.frame()
+    session_id <- createNetworkFromDataFrames(node_df, edge_df, title=title, collection=collection)
+    return(session_id)
   }
   
   is_cytoscape_running <- function(){
