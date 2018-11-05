@@ -19,11 +19,14 @@
 
 reduceSIF <- function(sif = sif, targets = targets, dataGMM = dataGMM, cutoff = 0.1){
   
-  targets <- unique(unlist(targets))
-  allSpecies <- intersect(x = allSpecies <- unique(c(sif[, 1], sif[, 3])), dataGMM@IDmap$S.cc)
-  
   maxCnt <- max(as.numeric(sif[, 2]))
   cntCutoff <- maxCnt*cutoff
+  
+  sif <- sif[which(sif[, 2]>cntCutoff), ]
+  cntCutoff <- 0
+  
+  targets <- unique(unlist(targets))
+  allSpecies <- intersect(x = allSpecies <- unique(c(sif[, 1], sif[, 3])), dataGMM@IDmap$S.cc)
   
   gg <- graph_from_data_frame(d = as.data.frame(x = sif[, c(1, 3)]), directed = TRUE)
   adj <- get.adjacency(graph = gg)
