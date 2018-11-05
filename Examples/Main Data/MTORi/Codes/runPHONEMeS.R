@@ -31,95 +31,18 @@ runPHONEMeS <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all
   
   TG <- unique(unlist(targets.P))
   
-  sifList <- list()
+  write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets.P, experiments = conditions)
   
-  if(length(TG)==1){
-    
-    targets <- targets.P
-    
-    write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = conditions)
-    
-    if (solver=="cplex"){
-      resultsSIF1 <- solve_with_cplex()
-    } else if (solver=="cbc"){
-      resultsSIF1 <- solve_with_cbc()
-    } else {
-      stop("Select a valid solver option ('cplex', 'cbc')")
-    }
-    
-    resultsSIF <- resultsSIF1
-    
+  if (solver=="cplex"){
+    resultsSIF1 <- solve_with_cplex()
+  } else if (solver=="cbc"){
+    resultsSIF1 <- solve_with_cbc()
   } else {
-    
-    for(ii in 1:length(TG)){
-      
-      idxT <- c()
-      for(i in 1:length(targets.P)){
-        if(TG[ii]%in%targets.P[[i]]){
-          idxT <- c(idxT, i)
-        }
-      }
-      
-      write_lp_file(dataGMM = dataGMM, pknList = pknList, targets = targets.P[idxT], experiments = conditions[idxT])
-      
-      if (solver=="cplex"){
-        resultsSIF1 <- solve_with_cplex()
-      } else if (solver=="cbc"){
-        resultsSIF1 <- solve_with_cbc()
-      } else {
-        stop("Select a valid solver option ('cplex', 'cbc')")
-      }
-      
-      # if(ii==1){
-      #   resultsSIF <- resultsSIF1
-      # } else {
-      #   resultsSIF <- distinct(rbind(resultsSIF, resultsSIF1))
-      # }
-      
-      sifList[[length(sifList)+1]] <- resultsSIF1
-      
-    }
-    
-    interactions <- sifList[[1]][, c(1, 3)]
-    for(ii in 2:length(sifList)){
-      
-      interactions <- unique(rbind(interactions, sifList[[ii]][, c(1, 3)]))
-      
-    }
-    
-    resultsSIF <- matrix(data = , nrow = nrow(interactions), ncol = 3)
-    resultsSIF[, 1] <- interactions[, 1]
-    resultsSIF[, 3] <- interactions[, 2]
-    for(ii in 1:nrow(interactions)){
-      
-      ss <- interactions[ii, 1]
-      tt <- interactions[ii, 2]
-      
-      weight <- c()
-      for(jj in 1:length(sifList)){
-        
-        idx <- intersect(x = which(sifList[[jj]][, 1]==ss), y = which(sifList[[jj]][, 3]==tt))
-        
-        if(length(idx) > 0){
-          
-          weight <- c(weight, as.numeric(sifList[[jj]][idx, 2]))
-          
-        } else {
-          
-          weight <- c(weight, 0)
-          
-        }
-        
-        resultsSIF[ii, 2] <- as.character(sum(weight)/length(sifList))
-        
-      }
-      
-    }
-    
+    stop("Select a valid solver option ('cplex', 'cbc')")
   }
   
   # write.table(resultsSIF, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
-  return(resultsSIF)
+  return(resultsSIF1)
   
 }
 
@@ -136,7 +59,9 @@ write_lp_file <- function(dataGMM, pknList, targets, experiments){
   # Creating lists containing all our variables
   binary_x <- create_binary_variables_for_x_vector(dataMatrix = dataMatrix)
   binary_y <- create_binary_variables_for_y_vector(pknList = pknList)
-  binaries <- create_binaries(binaries_x = binary_x, binaries_y = binary_y)
+  binary_z <- create_binary_variables_for_z_vector(pknList = pknList, dataMatrix = dataMatrix)
+  binary_orin_orout <- create_orin_orout_variables(dataMatrix = dataMatrix, targets = targets)
+  binaries <- create_binaries(binaries_x = binary_x, binaries_z = binary_z, binaries_in_out = binary_orin_orout, binaries_y = binary_y)
   
   # save mapping information
   saveRDS(binaries, file="tmp_binaries.rds")
@@ -145,10 +70,10 @@ write_lp_file <- function(dataGMM, pknList, targets, experiments){
   oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries, sizePen = TRUE, penMode = "edge")
   
   # Writing the bounds and also all the vvariables
-  bounds <- write_boundaries(binaries = binaries, pknList = pknList, M = 100)
+  bounds <- write_boundaries(binaries = binaries, pknList = pknList, M = 100, dataMatrix = dataMatrix)
   
   # Writing equality constraints
-  eC <- write_equality_constraints(dataMatrix = dataMatrix, binaries = binaries)
+  eC <- write_equality_constraints(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
   
   # Writing Constraint - 1
   c1 <- write_constraints_1(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList)
@@ -168,8 +93,11 @@ write_lp_file <- function(dataGMM, pknList, targets, experiments){
   # Writeing Constraint - 6
   c6 <- write_self_activating_constraints(pknList = pknList, binaries = binaries, dataMatrix = dataMatrix, M = 100)
   
+  # Writeing Constraint - 7
+  c7 <- write_in_out_constraints(binaries = binaries, targets = targets, dataMatrix = dataMatrix, pknList = pknList)
+  
   # Putting all constraints together in one file
-  allC <- all_constraints(equalityConstraints = eC, constraints1 = c1, constraints2 = c2, constraints3 = c3, constraints4 = c4, constraints5 = c5, constraints6 = c6)
+  allC <- all_constraints(equalityConstraints = eC, constraints1 = c1, constraints2 = c2, constraints3 = c3, constraints4 = c4, constraints5 = c5, constraints6 = c(c6, c7))
   
   # write(bounds, file = "bounds.txt")
   # write(binaries[[1]], file = "Integers.txt")
@@ -201,7 +129,7 @@ solve_with_cplex <- function(){
   library(XML)
   resultsSIF1 <- readOutSIFAll(cplexSolutionFileName = "results1.txt", binaries = binaries)
   colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
-  # write.table(resultsSIF1, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
+  # write.table(resultsSIF1, file = "res1.txt", quote = FALSE, row.names = FALSE, sep = "\t")
   
   # change format to data.frame
   resultsSIF1 <- data.frame(resultsSIF1, stringsAsFactors=FALSE)

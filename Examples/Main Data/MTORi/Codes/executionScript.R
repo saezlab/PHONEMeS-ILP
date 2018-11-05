@@ -52,8 +52,8 @@ names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
                        "MP2K1_HUMAN", "MTOR_HUMAN",  "KS6B1_HUMAN", "PK3CA_HUMAN",
                        "KPCA_HUMAN", "ROCK1_HUMAN")
 
-targets.P<-list(cond1=c(), cond2=c(), cond3=c(), cond4=c(),
-                cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c(),
+targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c(), cond3=c(), cond4=c(),
+                cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"),
                 cond9=c(), cond10=c())
 
 # Running PHONEMeS - cplex
@@ -70,12 +70,26 @@ write.table(x = resultsSIF_cplex, file = "resultSIF_cplex.txt", quote = FALSE, s
 
 # Reducing result network to include the most likely interactions
 source("reduceSIF.R")
-reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P, dataGMM = dataGMM, cutoff = 0.05)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.05)
 write.table(x = reducedSIF, file = "reducedSIF_005.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.1)
+write.table(x = reducedSIF, file = "reducedSIF_01.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.15)
+write.table(x = reducedSIF, file = "reducedSIF_015.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.2)
+write.table(x = reducedSIF, file = "reducedSIF_02.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.25)
+write.table(x = reducedSIF, file = "reducedSIF_025.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.3)
+write.table(x = reducedSIF, file = "reducedSIF_03.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.4)
+write.table(x = reducedSIF, file = "reducedSIF_04.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+reducedSIF <- reduceSIF(sif = resultsSIF_cplex, targets = targets.P[6], dataGMM = dataGMM, cutoff = 0.5)
+write.table(x = reducedSIF, file = "reducedSIF_05.txt", quote = FALSE, sep = "\t", row.names = FALSE)
 
 # Assigning nodes attributes for better visualization
 source("assignAttributes.R")
-nodesAttributes <- assignAttributes(sif = resultsSIF_cplex, dataGMM = dataGMM, targets = targets.P, writeAttr = TRUE)
+nodesAttributes <- assignAttributes(sif = resultsSIF_cplex, dataGMM = dataGMM, targets = targets.P[6], writeAttr = TRUE)
 
 # Running PHONEMeS - cbc
 resultsSIF_cbc <- runPHONEMeS(targets.P=targets.P, 
@@ -83,7 +97,7 @@ resultsSIF_cbc <- runPHONEMeS(targets.P=targets.P,
                               dataGMM=dataGMM, 
                               experiments=c(6), 
                               bg=bg, 
-                              nK="all", 
+                              nK="no", 
                               solver="cbc")
 
 write.table(resultsSIF_cplex, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
