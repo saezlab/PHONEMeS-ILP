@@ -28,7 +28,7 @@ build_PKN <-function(data.On,targets.On, bg,
   }		
   #make a graph object from the network - at the protein level
   allD.na<-union(which(is.na(pSdf[,"K.ID"])), which(is.na(pSdf[,"S.ID"])))
-  pSdf <- pSdf[-allD.na, ]
+  if(length(allD.na)>0){pSdf <- pSdf[-allD.na, ]}
   allD.nw<-makeNetwork(source=pSdf[,"K.ID"], 
                        target=pSdf[,"S.ID"], 
                        edgemode="directed")
