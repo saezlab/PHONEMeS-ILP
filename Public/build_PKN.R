@@ -1,3 +1,22 @@
+#
+#  This file is part of the CNO software
+#
+#  Copyright (c) 2018 - RWTH Aachen - JRC COMBINE
+#
+#  File author(s): E. Gjerga (enio.gjerga@gmail.com)
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  CNO website: https://saezlab.github.io/PHONEMeS/
+#
+##############################################################################
+# $Id$
+
+# This function makes a starting network based on data, a kinase substrate 
+# interaction data frame and a list of drug targets
+
 build_PKN <-function(data.On,targets.On, bg,
                      nK=c("all","no", "drugs2data", "data")){
   dataNodes<-unique(unlist(speciesP(data.On)))
@@ -9,6 +28,7 @@ build_PKN <-function(data.On,targets.On, bg,
   }		
   #make a graph object from the network - at the protein level
   allD.na<-union(which(is.na(pSdf[,"K.ID"])), which(is.na(pSdf[,"S.ID"])))
+  if(length(allD.na)>0){pSdf <- pSdf[-allD.na, ]}
   allD.nw<-makeNetwork(source=pSdf[,"K.ID"], 
                        target=pSdf[,"S.ID"], 
                        edgemode="directed")
@@ -149,7 +169,9 @@ build_PKN <-function(data.On,targets.On, bg,
       if(length(x) == 6){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5]))};
       if(length(x) == 7){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6]))};
       if(length(x) == 8){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6], x[8:7]))};
-      if(length(x) > 8){return(NA)}})
+      if(length(x) == 9){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6], x[8:7], x[9, 8]))};
+      if(length(x) == 10){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6], x[8:7], x[9, 8], x[10, 9]))};
+      if(length(x) > 10){return(NA)}})
     if(length(Paths) != 0){
       if(length(Paths) == 1){
         data2targetPaths<-rbind(data2targetPaths, Paths[[length(Paths)]])

@@ -1,4 +1,11 @@
 read testFile.lp
-optimize
-write results1.txt sol
+set mip tolerances mipgap 0.05
+set mip pool relgap 1e-04
+set mip pool replace 2
+set mip limits populate 500
+set mip pool capacity 100
+set mip pool intensity 4
+set timelimit 120
+populate
+write results1.txt sol all
 quit
