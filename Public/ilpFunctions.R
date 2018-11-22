@@ -574,7 +574,7 @@ all_constraints <- function(equalityConstraints = equalityConstraints, constrain
     
     for(i in 1:length(equalityConstraints)){
       
-      allConstraints <- c(allConstraints, paste("c", kk, ":\t", equalityConstraints[i], "\t \t", sep = ""))
+      allConstraints <- c(allConstraints, paste("c", sprintf("%.0f", kk), ":\t", equalityConstraints[i], "\t \t", sep = ""))
       kk <- kk + 1
       
     }
@@ -583,42 +583,42 @@ all_constraints <- function(equalityConstraints = equalityConstraints, constrain
   
   for(i in 1:length(constraints1)){
     
-    allConstraints <- c(allConstraints, paste("c", kk, ":\t", constraints1[i], "\t \t", sep = ""))
+    allConstraints <- c(allConstraints, paste("c", sprintf("%.0f", kk), ":\t", constraints1[i], "\t \t", sep = ""))
     kk <- kk + 1
     
   }
   
   for(i in 1:length(constraints2)){
     
-    allConstraints <- c(allConstraints, paste("c", kk, ":\t", constraints2[i], "\t \t", sep = ""))
+    allConstraints <- c(allConstraints, paste("c", sprintf("%.0f", kk), ":\t", constraints2[i], "\t \t", sep = ""))
     kk <- kk + 1
     
   }
   
   for(i in 1:length(constraints3)){
     
-    allConstraints <- c(allConstraints, paste("c", kk, ":\t", constraints3[i], "\t \t", sep = ""))
+    allConstraints <- c(allConstraints, paste("c", sprintf("%.0f", kk), ":\t", constraints3[i], "\t \t", sep = ""))
     kk <- kk + 1
     
   }
   
   for(i in 1:length(constraints4)){
     
-    allConstraints <- c(allConstraints, paste("c", kk, ":\t", constraints4[i], "\t \t", sep = ""))
+    allConstraints <- c(allConstraints, paste("c", sprintf("%.0f", kk), ":\t", constraints4[i], "\t \t", sep = ""))
     kk <- kk + 1
     
   }
   
   for(i in 1:length(constraints5)){
     
-    allConstraints <- c(allConstraints, paste("c", kk, ":\t", constraints5[i], "\t \t", sep = ""))
+    allConstraints <- c(allConstraints, paste("c", sprintf("%.0f", kk), ":\t", constraints5[i], "\t \t", sep = ""))
     kk <- kk + 1
     
   }
   
   for(i in 1:length(constraints6)){
     
-    allConstraints <- c(allConstraints, paste("c", kk, ":\t", constraints6[i], "\t \t", sep = ""))
+    allConstraints <- c(allConstraints, paste("c", sprintf("%.0f", kk), ":\t", constraints6[i], "\t \t", sep = ""))
     kk <- kk + 1
     
   }
