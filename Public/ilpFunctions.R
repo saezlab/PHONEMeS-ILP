@@ -59,17 +59,17 @@ create_binary_variables_for_z_vector <- function(pknList = pknList, dataMatrix =
   
   z_vector <- paste0(sif[, 1], "=", sif[, 3])
   
-  variables <- c()
-  for(ii in 1:nrow(dataMatrix$dataMatrix)){
-    for(jj in 1:nrow(sif)){
-      variables <- c(variables, paste0("z_",jj,"^",ii))
-    }
-  }
+  n_interactions <- nrow(sif)
+  n_experiments <- nrow(dataMatrix$dataMatrix)
   
-  identifiers <- c()
-  for(ii in 1:nrow(dataMatrix$dataMatrix)){
-    identifiers <- c(identifiers, paste0("interaction ", z_vector, " in experiment ", ii))
-  }
+  # auxiliary index vectors to use vectorized code instead of nested loops
+  index_j <- rep(c(1:n_interactions), n_experiments)
+  index_i <- rep(c(1:n_experiments), n_interactions)
+  index_i <- c(matrix(index_i, nrow = n_interactions, byrow = TRUE))  # reshape into correct order
+  # variable names
+  variables <- paste0("z_", index_j, "^", index_i)
+  # explanation for each variable
+  identifiers <- paste0("interaction ", z_vector, " in experiment ", index_i)
   
   binary_variables_list = list(1:length(variables),variables, identifiers)
   
@@ -78,30 +78,27 @@ create_binary_variables_for_z_vector <- function(pknList = pknList, dataMatrix =
 
 ##
 create_binary_variables_for_x_vector <- function(dataMatrix = dataMatrix){
+  # nrows: number of experiments
+  # ncols: number of species
+  dim_data <- dim(dataMatrix$dataMatrix)
+  n_experiments <- dim_data[1]
+  n_species <- dim_data[2]
   
-  allSpecies = c()
-  for(i in 1:ncol(dataMatrix[[1]])){
-    allSpecies <- c(allSpecies, strsplit(colnames(dataMatrix[[1]])[i], ":")[[1]][2])
-  }
+  # names of species
+  allSpecies <- gsub("^.*:", "", colnames(dataMatrix$dataMatrix))
   
-  variables = c()
-  for(i in 1:nrow(dataMatrix[[1]])){
-    for(j in 1:length(allSpecies)){
-      variables <- c(variables, paste("x_", j, "^", i, sep = ""))
-    }
-  }
+  # auxiliary index vectors to use vectorized code instead of nested loops
+  index_j <- rep(c(1:n_species), n_experiments)
+  index_i <- rep(c(1:n_experiments), n_species)
+  index_i <- c(matrix(index_i, nrow = n_species, byrow = TRUE))  # reshape into correct order
+  # variable names
+  variables <- paste0("x_", index_j, "^", index_i)
+  # explanation for each variable
+  identifiers <- paste("species", allSpecies[index_j], "in experiment", index_i)
   
-  identifiers = c()
-  for(i in 1:nrow(dataMatrix[[1]])){
-    for(j in 1:length(allSpecies)){
-      identifiers <- c(identifiers, paste("species", allSpecies[j], "in experiment", i))
-    }
-  }
-  
-  binary_variables_list = list(1:length(variables),variables, identifiers)
+  binary_variables_list = list(1:length(variables), variables, identifiers)
   
   return(binary_variables_list)
-  
 }
 
 ##
@@ -131,9 +128,7 @@ create_binaries <- function(binaries_x = binaries_x, binaries_z = binaries_z, bi
   bins <- append(binaries_x[[1]], binaries_z[[1]]+length(binaries_x[[1]]))
   bins <- append(bins, binaries_in_out[[1]]+length(bins))
   bins <- append(bins, binaries_y[[1]]+length(bins))
-  for(i in 1:length(bins)){
-    numbers <- c(numbers, paste("xb", bins[i], sep = ""))
-  }
+  numbers <- paste0("xb", bins)
   variables <- append(binaries_x[[2]], binaries_z[[2]])
   variables <- append(variables, binaries_in_out[[2]])
   variables <- append(variables, binaries_y[[2]])
