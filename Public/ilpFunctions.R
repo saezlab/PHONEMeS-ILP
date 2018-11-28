@@ -145,71 +145,122 @@ create_binaries <- function(binaries_x = binaries_x, binaries_z = binaries_z, bi
 ##
 write_objective_function <- function(dataMatrix = dataMatrix, binaries = binaries, sizePen = TRUE, penMode = "edge"){
   
-  dM <- dataMatrix[[1]]
-  kk <- 1
+  # # Original set of nested loops
+  # dM <- dataMatrix[[1]]
+  # kk <- 1
+  # objectiveFunction <- "obj:\t"
+  # for(i in 1:nrow(dM)){
+  #   for(j in 1:ncol(dM)){
+  #     if(as.numeric(dM[i, j]) <= 0){
+  #       if(as.numeric(dM[i, j]) == 0){
+  #         objectiveFunction <- paste(objectiveFunction, "", sep = "")
+  #         kk <- kk+1
+  #       }
+  #       else{
+  #         objectiveFunction <- paste(objectiveFunction, " ", 10*as.numeric(dM[i, j]), " ", "xb", kk, sep = "")
+  #         kk <- kk+1
+  #       }
+  #     }
+  #     else{
+  #       objectiveFunction <- paste(objectiveFunction, " + ", 10*as.numeric(dM[i, j]), " ", "xb", kk, sep = "")
+  #       kk <- kk+1
+  #     }
+  #   }
+  # }
+  
+  # # Alternative 1: setting the format of the numbers with compulsory sign
+  # # Doesn't exactly give the same result as the original nested loops because of number formatting
+  # dM <- t(dataMatrix[[1]])
+  # objectiveFunction <- "obj:\t"
+  # index_linear <- which(dM!=0)
+  # obj_1 <- paste(sprintf("%+.13f xb%.0f",
+  #                        10*as.numeric(dM[index_linear]),
+  #                        index_linear),
+  #                collapse=" ")
+  # objectiveFunction <- paste(objectiveFunction,
+  #                            obj_1,
+  #                            sep=" ")
+  
+  # Alternative 2: Fix the consecutive "+" and "-" signs when they appear.
+  # Note that we take the transpose of the matrix so that the linear index matches the order in the original nested loops
+  dM <- t(dataMatrix$dataMatrix)
   objectiveFunction <- "obj:\t"
-  for(i in 1:nrow(dM)){
-    for(j in 1:ncol(dM)){
-      if(as.numeric(dM[i, j]) <= 0){
-        if(as.numeric(dM[i, j]) == 0){
-          objectiveFunction <- paste(objectiveFunction, "", sep = "")
-          kk <- kk+1
-        }
-        else{
-          objectiveFunction <- paste(objectiveFunction, " ", 10*as.numeric(dM[i, j]), " ", "xb", kk, sep = "")
-          kk <- kk+1
-        }
-      }
-      else{
-        objectiveFunction <- paste(objectiveFunction, " + ", 10*as.numeric(dM[i, j]), " ", "xb", kk, sep = "")
-        kk <- kk+1
-      }
-    }
-  }
+  index_linear <- which(dM!=0)
+  obj_1 <- paste(" + ",
+                 10*as.numeric(dM[index_linear]),
+                 " ",
+                 "xb", index_linear,
+                 sep="",
+                 collapse="")
+  obj_1 <- gsub("\\+ -", "-", obj_1, perl=FALSE)
+  objectiveFunction <- paste(objectiveFunction,
+                             obj_1,
+                             sep="")
   
   if(sizePen){
     
     if(penMode=="edge"){
       
-      for(i in 1:length(binaries[[3]])){
-        
-        if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "reaction"){
-          
-          objectiveFunction <- paste(objectiveFunction, " + 0.001 ", binaries[[1]][i], sep = "")
-          
-        }
-        
-        if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "species"){
-          
-          objectiveFunction <- paste(objectiveFunction, " + 0.001 ", binaries[[1]][i], sep = "")
-          
-        }
-        
-      }
+      # for(i in 1:length(binaries[[3]])){
+      #   
+      #   if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "reaction"){
+      #     
+      #     objectiveFunction <- paste(objectiveFunction, " + 0.001 ", binaries[[1]][i], sep = "")
+      #     
+      #   }
+      #   
+      #   if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "species"){
+      #     
+      #     objectiveFunction <- paste(objectiveFunction, " + 0.001 ", binaries[[1]][i], sep = "")
+      #     
+      #   }
+      #   
+      # }
       
+      # The nested loops above can be replaced by this vectorized code
+      penalty_reaction <- 0.001
+      penalty_species <- 0.001
+      is_reaction_var <- grepl("reaction", binaries[[3]])
+      is_species_var <- grepl("species", binaries[[3]])
+      penalty_vector <- penalty_reaction*is_reaction_var + penalty_species*is_species_var
+      is_nonzero <- penalty_vector!=0
+      obj_2 <- paste(" + ", penalty_vector[is_nonzero], " ", binaries[[1]][is_nonzero], sep="", collapse="")
+      obj_2 <- gsub("\\+ -", "-", obj_2, perl=FALSE)  # in case some of the penalties was negative (which normally wouldn't)
     } else {
       
-      for(i in 1:length(binaries[[3]])){
-        
-        if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "species"){
-          
-          objectiveFunction <- paste(objectiveFunction, " + 0.001 ", binaries[[1]][i], sep = "")
-          
-        }
-        
-      }
+      # for(i in 1:length(binaries[[3]])){
+      #   
+      #   if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "species"){
+      #     
+      #     objectiveFunction <- paste(objectiveFunction, " + 0.001 ", binaries[[1]][i], sep = "")
+      #     
+      #   }
+      #   
+      # }
       
+      penalty_species <- 0.001
+      is_species_var <- grepl("species", binaries[[3]])
+      penalty_vector <- penalty_species*is_species_var
+      is_nonzero <- penalty_vector!=0
+      obj_2 <- paste(" + ", penalty_vector[is_nonzero], " ", binaries[[1]][is_nonzero], sep="", collapse="")
+      obj_2 <- gsub("\\+ -", "-", obj_2, perl=FALSE)  # in case some of the penalties was negative (which normally wouldn't)
     }
     
   } else {
     
-    for(i in 1:length(binaries[[3]])){
-      
-      objectiveFunction <- paste(objectiveFunction, " - 0.001 ", binaries[[1]][i], sep = "")
-      
-    }
+    # for(i in 1:length(binaries[[3]])){
+    #   
+    #   objectiveFunction <- paste(objectiveFunction, " - 0.001 ", binaries[[1]][i], sep = "")
+    #   
+    # }
     
+    penalty_general <- -0.001
+    obj_2 <- paste(" + ", penalty_general, " ", binaries[[1]], sep="", collapse="")
+    obj_2 <- gsub("\\+ -", "- ", obj_2, perl=FALSE)  # in case some of the penalties was negative
   }
+  objectiveFunction <- paste(objectiveFunction,
+                             obj_2,
+                             sep="")
   
   return(objectiveFunction)
   
