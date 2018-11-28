@@ -370,26 +370,49 @@ write_constraints_1 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
   
   sif <- createSIF(pknList)
   
-  constraints1 <- c()
+  # constraints1 <- c()
+  # 
+  # for(ii in 1:nrow(sif)){
+  #   
+  #   ss <- sif[ii, 1]
+  #   tt <- sif[ii, 3]
+  #   
+  #   for(jj in 1:nrow(dataMatrix$dataMatrix)){
+  #     
+  #     aa <- binaries[[1]][which(binaries[[3]]==paste0("species ", ss, " in experiment ", jj))]
+  #     bb <- binaries[[1]][which(binaries[[3]]==paste0("species ", tt, " in experiment ", jj))]
+  #     cc <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", jj))]
+  #     
+  #     c1 <- paste0(aa," + ", bb, " - 2", cc, " >= 0")
+  #     
+  #     constraints1 <- c(constraints1, c1)
+  #     
+  #   }
+  #   
+  # }
   
-  for(ii in 1:nrow(sif)){
-    
-    ss <- sif[ii, 1]
-    tt <- sif[ii, 3]
-    
-    for(jj in 1:nrow(dataMatrix$dataMatrix)){
-      
-      aa <- binaries[[1]][which(binaries[[3]]==paste0("species ", ss, " in experiment ", jj))]
-      bb <- binaries[[1]][which(binaries[[3]]==paste0("species ", tt, " in experiment ", jj))]
-      cc <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", jj))]
-      
-      c1 <- paste0(aa," + ", bb, " - 2", cc, " >= 0")
-      
-      constraints1 <- c(constraints1, c1)
-      
-    }
-    
-  }
+  
+  n_experiments <- nrow(dataMatrix$dataMatrix)
+  n_interaction <- nrow(sif)
+
+  # auxiliary index vectors to use vectorized code instead of nested loops
+  index_j <- rep(c(1:n_experiments), n_interaction)
+  index_i <- rep(c(1:n_interaction), n_experiments)
+  index_i <- c(matrix(index_i, nrow = n_experiments, byrow = TRUE))  # reshape into correct order
+
+  species_s <- sif[index_i, 1]
+  species_t <- sif[index_i, 3]
+
+  description_a <- paste0("species ", species_s, " in experiment ", index_j)
+  description_b <- paste0("species ", species_t, " in experiment ", index_j)
+  description_c <- paste0("interaction ", species_s, "=", species_t, " in experiment ", index_j)
+
+  variable_a <- binaries[[1]][match(description_a, binaries[[3]])]
+  variable_b <- binaries[[1]][match(description_b, binaries[[3]])]
+  variable_c <- binaries[[1]][match(description_c, binaries[[3]])]
+
+  constraints1 <- paste0(variable_a, " + ", variable_b, " - 2", variable_c, " >= 0")
+  
   
   constraints1 <- unique(constraints1)
   
