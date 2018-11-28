@@ -269,21 +269,33 @@ write_objective_function <- function(dataMatrix = dataMatrix, binaries = binarie
 ##
 write_boundaries <- function(binaries = binaries, pknList = pknList, M = M, dataMatrix = dataMatrix){
   
-  bounds <- c()
-  for(i in 1:length(binaries[[1]])){
-    #bounds <- c(bounds, paste("0 <= ", binaries[[1]][i], " <= 1", sep = ""))
-    bounds <- c(bounds, paste("\t", binaries[[1]][i], " >= 0\t \t", sep = ""))
-    bounds <- c(bounds, paste("\t", binaries[[1]][i], " <= 1\t \t", sep = ""))
-  }
+  # bounds <- c()
+  # for(i in 1:length(binaries[[1]])){
+  #   #bounds <- c(bounds, paste("0 <= ", binaries[[1]][i], " <= 1", sep = ""))
+  #   bounds <- c(bounds, paste("\t", binaries[[1]][i], " >= 0\t \t", sep = ""))
+  #   bounds <- c(bounds, paste("\t", binaries[[1]][i], " <= 1\t \t", sep = ""))
+  # }
+  # lower bound (lb)
+  bounds_lb <- c(paste0("\t", binaries[[1]], " >= 0\t \t"))
+  # lower bound (lb)
+  bounds_ub <- c(paste0("\t", binaries[[1]], " <= 1\t \t"))
+  # merge and reshape to match the output given by the loop
+  bounds <- c(t(cbind(bounds_lb, bounds_ub)))
+  
   
   sif <- createSIF(pknList = pknList)
   
   species <- unique(c(sif[, 1], sif[, 3]))
   
-  distVar <- c()
-  for(ii in 1:nrow(dataMatrix[[1]])){
-    distVar <- c(distVar, paste0("dist{", species, "}_", ii))
-  }
+  # distVar <- c()
+  # for(ii in 1:nrow(dataMatrix[[1]])){
+  #   distVar <- c(distVar, paste0("dist{", species, "}_", ii))
+  # }
+  n_experiments <- nrow(dataMatrix$dataMatrix)
+  n_distances <- length(species)
+  subindex_experiment <- rep(c(1:n_experiments), n_distances)
+  subindex_experiment <- c(matrix(subindex_experiment, nrow = n_distances, byrow = TRUE))  # reshape into correct order
+  distVar <- paste0("dist{", species, "}_", subindex_experiment)
   
   bounds <- c(bounds, paste0("\t", "0 <= ", distVar, " <= ", M))
   
