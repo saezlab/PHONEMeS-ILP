@@ -307,22 +307,42 @@ write_boundaries <- function(binaries = binaries, pknList = pknList, M = M, data
 ##
 write_equality_constraints <- function(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList){
   
-  dM <- dataMatrix[[1]]
-  equalityConstraints <- c()
+  # dM <- dataMatrix[[1]]
+  # equalityConstraints <- c()
+  # sif <- createSIF(pknList = pknList)
+  # 
+  # for(ii in 1:nrow(dM)){
+  #   
+  #   for(jj in 1:nrow(sif)){
+  #     
+  #     aa <- binaries[[1]][which(binaries[[3]]==paste0("reaction ", sif[jj, 1], "=", sif[jj, 3]))]
+  #     bb <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", sif[jj, 1], "=", sif[jj, 3], " in experiment ", ii))]
+  #     
+  #     equalityConstraints <- c(equalityConstraints, paste0(aa, " - ", bb, " >= 0"))
+  #     
+  #   }
+  #   
+  # }
+  
+  dM <- dataMatrix$dataMatrix
   sif <- createSIF(pknList = pknList)
   
-  for(ii in 1:nrow(dM)){
-    
-    for(jj in 1:nrow(sif)){
-      
-      aa <- binaries[[1]][which(binaries[[3]]==paste0("reaction ", sif[jj, 1], "=", sif[jj, 3]))]
-      bb <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", sif[jj, 1], "=", sif[jj, 3], " in experiment ", ii))]
-      
-      equalityConstraints <- c(equalityConstraints, paste0(aa, " - ", bb, " >= 0"))
-      
-    }
-    
-  }
+  n_experiments <- nrow(dM)
+  n_interaction <- nrow(sif)
+  
+  # auxiliary index vectors to use vectorized code instead of nested loops
+  index_j <- rep(c(1:n_interaction), n_experiments)
+  index_i <- rep(c(1:n_experiments), n_interaction)
+  index_i <- c(matrix(index_i, nrow = n_interaction, byrow = TRUE))  # reshape into correct order
+  
+  description_a <- paste0("reaction ", sif[index_j, 1], "=", sif[index_j, 3])
+  description_b <- paste0("interaction ", sif[index_j, 1], "=", sif[index_j, 3], " in experiment ", index_i)
+  
+  variable_a <- binaries[[1]][match(description_a, binaries[[3]])]
+  variable_b <- binaries[[1]][match(description_b, binaries[[3]])]
+  
+  equalityConstraints1 <- paste0(variable_a, " - ", variable_b, " >= 0")
+  
   
   # if(nrow(dM) > 1){
   # 
