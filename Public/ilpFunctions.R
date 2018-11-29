@@ -341,7 +341,7 @@ write_equality_constraints <- function(dataMatrix = dataMatrix, binaries = binar
   variable_a <- binaries[[1]][match(description_a, binaries[[3]])]
   variable_b <- binaries[[1]][match(description_b, binaries[[3]])]
   
-  equalityConstraints1 <- paste0(variable_a, " - ", variable_b, " >= 0")
+  equalityConstraints <- paste0(variable_a, " - ", variable_b, " >= 0")
   
   
   # if(nrow(dM) > 1){
