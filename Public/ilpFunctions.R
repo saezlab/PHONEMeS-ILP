@@ -477,62 +477,88 @@ write_constraints_2 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
 ##
 write_constraints_3 <- function(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList){
   
+  # constraints4 <- c()
+  # 
+  # sif <- createSIF(pknList)
+  # 
+  # for(ii in 1:nrow(dataMatrix$dataMatrix)){
+  #   
+  #   nNames <- dataMatrix$species[dataMatrix$dnID[[ii]]]
+  #   
+  #   nIncident <- list()
+  #   for(i in 1:length(nNames)){
+  #     
+  #     temp <- c()
+  #     nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 1]==nNames[i]))
+  #     
+  #   }
+  #   
+  #   for(i in 1:length(nIncident)){
+  #     if(length(nIncident[[i]]) > 0){
+  #       temp <- ""
+  #       for(j in 1:length(nIncident[[i]])){
+  #         
+  #         ss <- sif[nIncident[[i]][j], 1]
+  #         tt <- sif[nIncident[[i]][j], 3]
+  #         
+  #         if(j==1){
+  #           temp <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))]
+  #         }
+  #         else{
+  #           temp <- paste0(temp, " + ", binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))])
+  #         }
+  #         
+  #       }
+  #       
+  #       bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
+  #       constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+  #     }
+  #     else{
+  #       
+  #       bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
+  #       constraints4 <- c(constraints4, paste0(binaries[[1]][bb], " = 0"))
+  #       
+  #     }
+  #     
+  #   }
+  #   
+  # }
+  
   constraints4 <- c()
-  
   sif <- createSIF(pknList)
-  
-  for(ii in 1:nrow(dataMatrix$dataMatrix)){
-    
-    nNames <- dataMatrix$species[dataMatrix$dnID[[ii]]]
-    
-    nIncident <- list()
-    for(i in 1:length(nNames)){
-      
-      temp <- c()
-      nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 1]==nNames[i]))
-      
-    }
+  n_experiments <- nrow(dataMatrix$dataMatrix)
+  for (i_experiment in c(1:n_experiments)){
+    nNames <- dataMatrix$species[dataMatrix$dnID[[i_experiment]]]
+    nIncident <- lapply(nNames, function(x){which(sif[,1]==x)})
     
     for(i in 1:length(nIncident)){
       if(length(nIncident[[i]]) > 0){
-        temp <- ""
-        for(j in 1:length(nIncident[[i]])){
-          
-          ss <- sif[nIncident[[i]][j], 1]
-          tt <- sif[nIncident[[i]][j], 3]
-          
-          if(j==1){
-            temp <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))]
-          }
-          else{
-            temp <- paste0(temp, " + ", binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))])
-          }
-          
-        }
+        species_s <- sif[nIncident[[i]], 1]
+        species_t <- sif[nIncident[[i]], 3]
         
-        bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
-        constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+        description_a <- paste0("interaction ", species_s, "=", species_t, " in experiment ", i_experiment)
+        variable_a <- binaries[[1]][match(description_a, binaries[[3]])]
+        part_a <- paste0(variable_a, collapse=" + ")
+        
+        description_b <- paste0("species ", nNames[i], " in experiment ", i_experiment)
+        variable_b <-  binaries[[1]][match(description_b, binaries[[3]])]
+        
+        constraints4 <- c(constraints4, paste(part_a, " - ", variable_b, " >= 0"))
       }
       else{
+        description_b <- paste0("species ", nNames[i], " in experiment ", i_experiment)
+        variable_b <-  binaries[[1]][match(description_b, binaries[[3]])]
         
-        bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
-        constraints4 <- c(constraints4, paste0(binaries[[1]][bb], " = 0"))
-        
+        constraints4 <- c(constraints4, paste0(variable_b, " = 0"))
       }
-      
     }
-    
   }
   
   if(length(grep(pattern = "NA", x = constraints4))==0){
-    
     return(constraints4)
-    
   }
   else{
-    
     return(constraints4[-grep(pattern = "NA", x = constraints4)])
-    
   }
   
 }
@@ -540,62 +566,90 @@ write_constraints_3 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
 ##
 write_constraints_4 <- function(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList){
   
+  # constraints4 <- c()
+  # 
+  # sif <- createSIF(pknList)
+  # 
+  # for(ii in 1:nrow(dataMatrix$dataMatrix)){
+  #   
+  #   nNames <- dataMatrix$species[dataMatrix$dnID[[ii]]]
+  #   
+  #   nIncident <- list()
+  #   for(i in 1:length(nNames)){
+  #     
+  #     temp <- c()
+  #     nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 3]==nNames[i]))
+  #     
+  #   }
+  #   
+  #   for(i in 1:length(nIncident)){
+  #     if(length(nIncident[[i]]) > 0){
+  #       temp <- ""
+  #       for(j in 1:length(nIncident[[i]])){
+  #         
+  #         ss <- sif[nIncident[[i]][j], 1]
+  #         tt <- sif[nIncident[[i]][j], 3]
+  #         
+  #         if(j==1){
+  #           temp <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))]
+  #         }
+  #         else{
+  #           temp <- paste0(temp, " + ", binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))])
+  #         }
+  #         
+  #       }
+  #       
+  #       bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
+  #       constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+  #     }
+  #     else{
+  #       
+  #       bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
+  #       constraints4 <- c(constraints4, paste0(binaries[[1]][bb], " = 0"))
+  #       
+  #     }
+  #     
+  #   }
+  #   
+  # }
+  
+  
   constraints4 <- c()
-  
   sif <- createSIF(pknList)
-  
-  for(ii in 1:nrow(dataMatrix$dataMatrix)){
-    
-    nNames <- dataMatrix$species[dataMatrix$dnID[[ii]]]
-    
-    nIncident <- list()
-    for(i in 1:length(nNames)){
-      
-      temp <- c()
-      nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 3]==nNames[i]))
-      
-    }
+  n_experiments <- nrow(dataMatrix$dataMatrix)
+  for (i_experiment in c(1:n_experiments)){
+    nNames <- dataMatrix$species[dataMatrix$dnID[[i_experiment]]]
+    nIncident <- lapply(nNames, function(x){which(sif[,3]==x)})
     
     for(i in 1:length(nIncident)){
       if(length(nIncident[[i]]) > 0){
-        temp <- ""
-        for(j in 1:length(nIncident[[i]])){
-          
-          ss <- sif[nIncident[[i]][j], 1]
-          tt <- sif[nIncident[[i]][j], 3]
-          
-          if(j==1){
-            temp <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))]
-          }
-          else{
-            temp <- paste0(temp, " + ", binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))])
-          }
-          
-        }
+        species_s <- sif[nIncident[[i]], 1]
+        species_t <- sif[nIncident[[i]], 3]
         
-        bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
-        constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+        description_a <- paste0("interaction ", species_s, "=", species_t, " in experiment ", i_experiment)
+        variable_a <- binaries[[1]][match(description_a, binaries[[3]])]
+        part_a <- paste0(variable_a, collapse=" + ")
+        
+        description_b <- paste0("species ", nNames[i], " in experiment ", i_experiment)
+        variable_b <-  binaries[[1]][match(description_b, binaries[[3]])]
+        
+        constraints4 <- c(constraints4, paste(part_a, " - ", variable_b, " >= 0"))
       }
       else{
+        description_b <- paste0("species ", nNames[i], " in experiment ", i_experiment)
+        variable_b <-  binaries[[1]][match(description_b, binaries[[3]])]
         
-        bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
-        constraints4 <- c(constraints4, paste0(binaries[[1]][bb], " = 0"))
-        
+        constraints4 <- c(constraints4, paste0(variable_b, " = 0"))
       }
-      
     }
-    
   }
   
+  
   if(length(grep(pattern = "NA", x = constraints4))==0){
-    
     return(constraints4)
-    
   }
   else{
-    
     return(constraints4[-grep(pattern = "NA", x = constraints4)])
-    
   }
   
 }
@@ -603,62 +657,89 @@ write_constraints_4 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
 ##
 write_constraints_5 <- function(dataMatrix = dataMatrix, binaries = binaries, pknList = pknList){
   
+  # constraints4 <- c()
+  # 
+  # sif <- createSIF(pknList)
+  # 
+  # for(ii in 1:nrow(dataMatrix$dataMatrix)){
+  #   
+  #   nNames <- dataMatrix$species[dataMatrix$dsID[[ii]]]
+  #   
+  #   nIncident <- list()
+  #   for(i in 1:length(nNames)){
+  #     
+  #     temp <- c()
+  #     nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 3]==nNames[i]))
+  #     
+  #   }
+  #   
+  #   for(i in 1:length(nIncident)){
+  #     if(length(nIncident[[i]]) > 0){
+  #       temp <- ""
+  #       for(j in 1:length(nIncident[[i]])){
+  #         
+  #         ss <- sif[nIncident[[i]][j], 1]
+  #         tt <- sif[nIncident[[i]][j], 3]
+  #         
+  #         if(j==1){
+  #           temp <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))]
+  #         }
+  #         else{
+  #           temp <- paste0(temp, " + ", binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))])
+  #         }
+  #         
+  #       }
+  #       
+  #       bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
+  #       constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+  #     }
+  #     else{
+  #       
+  #       bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
+  #       constraints4 <- c(constraints4, paste0(binaries[[1]][bb], " = 0"))
+  #       
+  #     }
+  #     
+  #   }
+  #   
+  # }
+  
   constraints4 <- c()
-  
   sif <- createSIF(pknList)
-  
-  for(ii in 1:nrow(dataMatrix$dataMatrix)){
-    
-    nNames <- dataMatrix$species[dataMatrix$dsID[[ii]]]
-    
-    nIncident <- list()
-    for(i in 1:length(nNames)){
-      
-      temp <- c()
-      nIncident[[length(nIncident)+1]] <- c(temp, which(sif[, 3]==nNames[i]))
-      
-    }
+  n_experiments <- nrow(dataMatrix$dataMatrix)
+  for (i_experiment in c(1:n_experiments)){
+    nNames <- dataMatrix$species[dataMatrix$dsID[[i_experiment]]]
+    nIncident <- lapply(nNames, function(x){which(sif[,3]==x)})
     
     for(i in 1:length(nIncident)){
       if(length(nIncident[[i]]) > 0){
-        temp <- ""
-        for(j in 1:length(nIncident[[i]])){
-          
-          ss <- sif[nIncident[[i]][j], 1]
-          tt <- sif[nIncident[[i]][j], 3]
-          
-          if(j==1){
-            temp <- binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))]
-          }
-          else{
-            temp <- paste0(temp, " + ", binaries[[1]][which(binaries[[3]]==paste0("interaction ", ss, "=", tt, " in experiment ", ii))])
-          }
-          
-        }
+        species_s <- sif[nIncident[[i]], 1]
+        species_t <- sif[nIncident[[i]], 3]
         
-        bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
-        constraints4 <- c(constraints4, paste(temp, " - ", binaries[[1]][bb], " >= 0"))
+        description_a <- paste0("interaction ", species_s, "=", species_t, " in experiment ", i_experiment)
+        variable_a <- binaries[[1]][match(description_a, binaries[[3]])]
+        part_a <- paste0(variable_a, collapse=" + ")
+        
+        description_b <- paste0("species ", nNames[i], " in experiment ", i_experiment)
+        variable_b <-  binaries[[1]][match(description_b, binaries[[3]])]
+        
+        constraints4 <- c(constraints4, paste(part_a, " - ", variable_b, " >= 0"))
       }
       else{
+        description_b <- paste0("species ", nNames[i], " in experiment ", i_experiment)
+        variable_b <-  binaries[[1]][match(description_b, binaries[[3]])]
         
-        bb <- which(binaries[[3]]==paste0("species ", nNames[i], " in experiment ", ii))
-        constraints4 <- c(constraints4, paste0(binaries[[1]][bb], " = 0"))
-        
+        constraints4 <- c(constraints4, paste0(variable_b, " = 0"))
       }
-      
     }
-    
   }
   
+  
   if(length(grep(pattern = "NA", x = constraints4))==0){
-    
     return(constraints4)
-    
   }
   else{
-    
     return(constraints4[-grep(pattern = "NA", x = constraints4)])
-    
   }
   
 }
