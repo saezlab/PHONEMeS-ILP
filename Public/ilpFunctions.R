@@ -1314,15 +1314,17 @@ readOutSIFAll<- function(cplexSolutionFileName, binaries = binaries){
 
 ##
 write_in_out_constraints <- function(binaries = binaries, targets = targets, dataMatrix = dataMatrix, pknList = pknList){
-  
+
   constraints <- c()
 
   sif <- createSIF(pknList = pknList)
 
   #
-  dnID <- c()
-  for(ii in 1:nrow(dataMatrix[[1]])){dnID <- c(dnID, dataMatrix$species[dataMatrix$dnID[[ii]]])}
-  dnID <- unique(dnID)
+  # dnID <- c()
+  # for(ii in 1:nrow(dataMatrix[[1]])){dnID <- c(dnID, dataMatrix$species[dataMatrix$dnID[[ii]]])}
+  # dnID <- unique(dnID)
+  # dnID <- setdiff(dnID, unique(unlist(targets)))
+  dnID <- dataMatrix$species[unique(c(unlist(dataMatrix$dnID)))]
   dnID <- setdiff(dnID, unique(unlist(targets)))
 
   for(ii in 1:length(dnID)){
@@ -1386,5 +1388,48 @@ write_in_out_constraints <- function(binaries = binaries, targets = targets, dat
   }
 
   return(constraints)
-  
+
 }
+
+# # Alternative to the original implementation, but it is similar in terms of computation time
+# write_in_out_constraints <- function(binaries = binaries, targets = targets, dataMatrix = dataMatrix, pknList = pknList){
+# 
+#   constraints <- c()
+# 
+#   sif <- createSIF(pknList = pknList)
+# 
+#   dnID <- dataMatrix$species[unique(c(unlist(dataMatrix$dnID)))]
+#   dnID <- setdiff(dnID, unique(unlist(targets)))
+# 
+#   for(ii in 1:length(dnID)){
+# 
+#     idx1 <- which(sif[, 3]==dnID[ii])
+#     idx2 <- which(sif[, 1]==dnID[ii])
+#     orinVar <- binaries[[1]][which(binaries[[3]]==paste0("orin ", dnID[ii]))]
+#     oroutVar <- binaries[[1]][which(binaries[[3]]==paste0("orout ", dnID[ii]))]
+# 
+#     if((length(idx1)>0) && (length(idx2)>0)){
+# 
+#       varIn <- binaries[[1]][which(binaries[[3]] %in% paste0("reaction ", sif[idx1, 1], "=", sif[idx1, 3]))]
+#       varOut <- binaries[[1]][which(binaries[[3]] %in% paste0("reaction ", sif[idx2, 1], "=", sif[idx2, 3]))]
+#       cc1 <- paste0(orinVar, " - ", oroutVar, " = 0")
+# 
+#       cc2_part1 <- paste0(varIn, collapse = " + ")
+#       cc2 <- paste0(cc2_part1, " - ", orinVar, " >= 0")
+# 
+#       cc3_part1 <- paste0(varOut, collapse = " + ")
+#       cc3 <- paste0(cc3_part1, " - ", oroutVar, " >= 0")
+# 
+#       cc4 <- paste0(varIn, " - ", orinVar, " <= 0")
+# 
+#       cc5 <- paste0(varOut, " - ", oroutVar, " <= 0")
+# 
+#       constraints <- c(constraints, c(cc1, cc2, cc3, cc4, cc5))
+# 
+#     }
+# 
+#   }
+# 
+#   return(constraints)
+# 
+# }
