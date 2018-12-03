@@ -1153,40 +1153,80 @@ write_self_activating_constraints <- function(pknList = pknList, binaries = bina
   
   species <- unique(c(sif[, 1], sif[, 3]))
   
-  distVar <- c()
-  for(ii in 1:nrow(dataMatrix[[1]])){
-    distVar <- c(distVar, paste0("dist{", species, "}_", ii))
-  }
+  n_experiments <- nrow(dataMatrix$dataMatrix)
+  n_species <- length(species)
   
+  index_i <- rep(c(1:n_experiments), n_species)
+  index_i <- c(matrix(index_i, nrow = n_species, byrow = TRUE))  # reshape into correct order
+  distVar <- paste0("dist{", rep(species, n_experiments), "}_", index_i)
+  
+  # for(ii in 1:length(species)){
+  #   
+  #   ss <- binaries[[1]][which(grepl(pattern = paste0("species ", species[ii], " "), x = binaries[[3]]))]
+  #   
+  #   # for(jj in 1:length(ss)){
+  #   #   
+  #   #   cc1 <- c(cc1, paste0(ss[jj], " - dist{", species[ii], "}_", jj, " <= 0"))
+  #   #   
+  #   # }
+  #   index_j <- c(1:length(ss))
+  #   cc1 <- c(cc1, paste0(ss[index_j], " - dist{", species[ii], "}_", index_j, " <= 0"))
+  #   
+  # }
+  
+  # The loop above can be avoided with the following code
   speciesVar <- binaries[[1]][grepl(pattern = "species", x = binaries[[3]])]
   speciesExp <- binaries[[3]][grepl(pattern = "species", x = binaries[[3]])]
+  speciesName <- gsub("species ([[:alnum:]].*) in experiment ([[:digit:]].*)", "\\1", speciesExp)
   
-  for(i in 1:length(distVar)){
-    
-    ss <- speciesVar[grepl(pattern = paste0("species ", species[i], " "), x = speciesExp)]
-    
-    cc1 <- c(cc1, paste0(ss, " - ", distVar[i], " <= 0"))
-    
-  }
+  tmp <- speciesName %in% species
+  speciesVar <- speciesVar[tmp]
+  speciesExp <- speciesExp[tmp]
+  speciesName <- speciesName[tmp]
+  speciesDist <- gsub("species ([[:alnum:]].*) in experiment ([[:digit:]].*)",
+                      "dist{\\1}_\\2",
+                      speciesExp)
+  cc1 <- paste0(speciesVar, " - ", speciesDist, " <= 0")
+  
+  # because the order is not the same as what we get using the loop, we can reorder to produce the same output
+  # (note: this part could be avoided in the future once the full equivalence of the code has been proved)
+  custom_order <- order(factor(speciesName, levels=species))
+  cc1 <- cc1[custom_order]
+  
   
   ##
+  # reacVar <- binaries[[1]][grepl(pattern = "interaction", x = binaries[[3]])]
+  # reacExp <- binaries[[3]][grepl(pattern = "interaction", x = binaries[[3]])]
+  # cnt <- 1
+  # for(ii in 1:nrow(dataMatrix[[1]])){
+  #   
+  #   for(i in 1:nrow(sif)){
+  #     
+  #     ss <- sif[i, 1]
+  #     tt <- sif[i, 3]
+  #     
+  #     cc2 <- c(cc2, paste0(paste0("dist{", tt, "}_", ii), " - ", paste0("dist{", ss, "}_", ii), " - ", M, " ", reacVar[cnt], " >= ", 1-M))
+  #     
+  #     cnt <- cnt + 1
+  #     
+  #   }
+  #   
+  # }
+  
   reacVar <- binaries[[1]][grepl(pattern = "interaction", x = binaries[[3]])]
   reacExp <- binaries[[3]][grepl(pattern = "interaction", x = binaries[[3]])]
-  cnt <- 1
-  for(ii in 1:nrow(dataMatrix[[1]])){
-    
-    for(i in 1:nrow(sif)){
-      
-      ss <- sif[i, 1]
-      tt <- sif[i, 3]
-      
-      cc2 <- c(cc2, paste0(paste0("dist{", tt, "}_", ii), " - ", paste0("dist{", ss, "}_", ii), " - ", M, " ", reacVar[cnt], " >= ", 1-M))
-      
-      cnt <- cnt + 1
-      
-    }
-    
-  }
+  n_interactions <- nrow(sif)
+  index_i <- rep(c(1:n_experiments), n_interactions)
+  index_i <- c(matrix(index_i, nrow = n_interactions, byrow = TRUE))  # reshape into correct order
+  species_s <- sif[, 1]
+  species_t <- sif[, 3]
+  cc2 <- paste0("dist{", species_t, "}_", index_i, 
+                " - ", 
+                "dist{", species_s, "}_", index_i, 
+                " - ", 
+                M, " ", reacVar, 
+                " >= ", 
+                1-M)
   
   ##
   cc3 <- paste0(distVar, " <= ", M)
