@@ -1,5 +1,6 @@
 library(readr)
 library(dplyr)
+library(viper)
 
 Phospho_STY_Sites <- as.data.frame(read_delim("~/Documents/PHONEMeS-ILP/Examples/UD_marco_VHL/Phospho (STY)Sites.txt", 
                                               "\t", escape_double = FALSE, trim_ws = TRUE))
@@ -66,3 +67,57 @@ write_csv(ttop_list[[1]],"~/Documents/PHONEMeS-ILP/Examples/UD_marco_VHL/ttop_ca
 write_csv(ttop_list[[2]],"~/Documents/PHONEMeS-ILP/Examples/UD_marco_VHL/ttop_metastasis_vs_healthy.csv")
 write_csv(ttop_list[[3]],"~/Documents/PHONEMeS-ILP/Examples/UD_marco_VHL/ttop_metastasis_vs_cancer.csv")
 write_csv(ttop_list[[4]],"~/Documents/PHONEMeS-ILP/Examples/UD_marco_VHL/ttop_metastasis_resolution.csv")
+
+url <- paste0(
+  'http://omnipathdb.org/ptms?',
+  'fields=sources,references&genesymbols=1'
+)
+
+download_omnipath <- function(){
+  
+  read.table(url, sep = '\t', header = TRUE)
+  
+}
+
+omnipath_ptm <- download_omnipath()
+omnipath_ptm <- omnipath_ptm[omnipath_ptm$modification %in% c("dephosphorylation","phosphorylation"),]
+KSN <- omnipath_ptm[,c(4,3)]
+KSN$substrate_genesymbol <- paste(KSN$substrate_genesymbol,omnipath_ptm$residue_type, sep ="_")
+KSN$substrate_genesymbol <- paste(KSN$substrate_genesymbol,omnipath_ptm$residue_offset, sep = "")
+KSN$sign <- ifelse(omnipath_ptm$modification == "phosphorylation", 1, -1)
+
+KSN_viper <- df_to_viper_regulon(KSN)
+
+eset <- merge(ttop_list[[1]][,c(1,4)], ttop_list[[2]][,c(1,4)], by = "ID")
+eset <- merge(eset,ttop_list[[3]][,c(1,4)], by = "ID")
+eset <- merge(eset, ttop_list[[4]][,c(1,4)], by = "ID")
+
+row.names(eset) <- eset$ID
+eset <- eset[,-1]
+names(eset) <- c("cancer_vs_healthy","metastasis_vs_healthy","metastasis_vs_cancer","metastasis_resolution")
+
+viperRes <- as.data.frame(viper(eset = eset, regulon = KSN_viper, minsize = 5, adaptive.size = F, eset.filter = F, cores = 3))
+
+kinase_for_phonemes_list <- list()
+
+for(i in 1:4)
+{
+  viperRes <- viperRes[order(abs(viperRes[,i]), decreasing = T),]
+  # kinase_for_phonemes_list[[i]] <- as.data.frame(t(viperRes[1:(length(viperRes[,1])/5),i]))
+  # names(kinase_for_phonemes_list[[i]]) <- row.names(viperRes[1:(length(viperRes[,1])/5),])
+  kinase_for_phonemes_list[[i]] <- row.names(viperRes[1:(length(viperRes[,1])/5),])
+}
+
+for_enio <- list()
+
+for(i in 1:4)
+{
+  for_enio[[i]] <- list()
+  for_enio[[i]][[1]] <- KSN
+  for_enio[[i]][[2]] <- ttop_list[[i]]
+  for_enio[[i]][[3]] <- kinase_for_phonemes_list[[i]]
+  names(for_enio[[i]]) <- c("KSN","ttop","kinases")
+}
+names(for_enio) <- c("cancer_vs_healthy","metastasis_vs_healthy","metastasis_vs_cancer","metastasis_resolution")
+
+save(file = "~/Documents/PHONEMeS-ILP/Examples/UD_marco_VHL/input_PHONEMES_UD.Rdata", for_enio)
