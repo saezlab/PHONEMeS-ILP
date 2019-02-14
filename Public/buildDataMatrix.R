@@ -19,6 +19,9 @@
 buildDataMatrix <- function(dataGMM = dataGMM, pknList = pknList, targets, experiments){
   
   TG <- unlist(unique(targets))
+  sif = createSIF(pknList = pknList)
+  if(length(setdiff(x = TG, unique(c(sif[, 1], sif[, 3]))))>0){TG <- TG[-which(TG %in% setdiff(x = TG, unique(c(sif[, 1], sif[, 3]))))]}
+  if(length(which(TG==""))>0){TG <- TG[-which(TG=="")]}
   sites <- intersect(pknList@species, dataGMM@IDmap$S.cc)
   idxTG <- list()
   idxDN <- list()
@@ -26,6 +29,7 @@ buildDataMatrix <- function(dataGMM = dataGMM, pknList = pknList, targets, exper
   
   dataMatrix <- matrix(data = 0, nrow = length(experiments), ncol = length(pknList@species))
   cNames <- unique(c(TG, setdiff(pknList@species, c(TG, sites)), sites))
+  if(length(setdiff(x = cNames, y = pknList@species))>0){cNames <- cNames[-which(cNames==setdiff(x = cNames, y = pknList@species))]}
   idx <- which(cNames%in%sites)
   for(ii in 1:length(experiments)){
     idxDS[[length(idxDS)+1]] <- idx

@@ -70,7 +70,7 @@ write_lp_file <- function(dataGMM, pknList, targets, experiments, nSolutions, mi
   saveRDS(binaries, file="tmp_binaries.rds")
   
   # Writing the objective function
-  oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries, sizePen = TRUE, penMode = "edge")
+  oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries)
   
   # Writing the bounds and also all the vvariables
   bounds <- write_boundaries(binaries = binaries, pknList = pknList, M = 100, dataMatrix = dataMatrix)
@@ -155,6 +155,10 @@ solve_with_cplex <- function(){
   
   # clean-up temporary files
   file.remove("cplex.log")
+  for (i in 0:20)
+  {
+    file.remove(paste("clone",paste(i,".log", sep = ""), sep = ""))
+  }
   file.remove("results1.txt")
   file.remove("testFile.lp")
   file.remove("tmp_binaries.rds")
