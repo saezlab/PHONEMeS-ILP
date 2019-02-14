@@ -30,9 +30,9 @@ names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
                        "MP2K1_HUMAN", "MTOR_HUMAN",  "KS6B1_HUMAN", "PK3CA_HUMAN",
                        "KPCA_HUMAN", "ROCK1_HUMAN")
 
-targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c(), cond3=c(), cond4=c(),
-                cond5=c(), cond6=c("MTOR_HUMAN"), cond7=c(), cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"),
-                cond9=c(), cond10=c())
+targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c("KCC2A_HUMAN", "KCC2B_HUMAN", "KCC2C_HUMAN", "KCC2D_HUMAN"), cond3=c("EGFR_HUMAN", "ERBB2_HUMAN"), 
+                cond4=c("MK01_HUMAN", "MK03_HUMAN", "MK14_HUMAN"), cond5=c("MP2K1_HUMAN", "MP2K2_HUMAN"), cond6=c("MTOR_HUMAN"), cond7=c("KS6B1_HUMAN", "KS6B2_HUMAN"), 
+                cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"), cond9=c("KPCA_HUMAN", "KPCB_HUMAN", "KPCG_HUMAN", "KPCE_HUMAN"), cond10=c("ROCK1_HUMAN", "ROCK2_HUMAN"))
 
 # Select experimental condition
 experiments <- c(1, 6, 8) # for PI3Ki-AKTi-MTORi case
