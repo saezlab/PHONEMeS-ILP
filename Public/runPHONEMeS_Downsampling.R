@@ -13,6 +13,7 @@
 runPHONEMeS_Downsampling <- function(targets.P, conditions, dataGMM, experiments, bg, nIter = 100, nK="all", solver="cplex"){
   
   conditions <- conditions[experiments]
+  targets <- targets.P[experiments]
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
     stop(paste0("Select a valid solver option (", paste(valid_solver_list, collapse=", "), ")"))
@@ -35,7 +36,7 @@ runPHONEMeS_Downsampling <- function(targets.P, conditions, dataGMM, experiments
     
     speciesP(data.P)
     
-    targets <- targets.P[experiments]
+    # targets <- targets.P[experiments]
     
     pknList<-build_Nw(data.On=data.P, targets.On=targets, bg=bg, nK=nK)
     
