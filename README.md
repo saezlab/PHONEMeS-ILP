@@ -20,27 +20,21 @@ install.packages("PHONEMeS_0.2.7.tar.gz", repos=NULL)
 
 The ILP formulation contained in this repository does not need installation, just download and run the desired scripts (see [Documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples) for more information).
 
-Other supportive R packages needed are:
+Additional dependencies needed are:
 
-*igraph* which you can easily install by typing in R the below line:
-
-```R
-install.packages("igraph")
-```
-
-*XML* which can be downloaded [here](https://cran.r-project.org/src/contrib/XML_3.98-1.9.tar.gz) and then you can install by typing in R:
+*igraph* and *XML* which you can easily install by typing in R the below line:
 
 ```R
-install.packages("XML_3.98-1.9.tar.gz", repos=NULL)
+install.packages(c("igraph", "XML"))
 ```
-
-### Usage
-
-For a guide how to run a PHONEMeS analysis, please refer to the dedicated [documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples).
 
 ### CPLEX
 
 PHONEMeS-ILP depends on the CPLEX solver, meaning that the user needs to obtain an IBM ILOG CPLEX license and then save the executable file on the working directory. The IBM ILOG CPLEX Optimization Studio license can be obtained for free by students and faculty staff/researchers [here](https://ibm.onthehub.com/) (under *Data & Analytics* -> *Software* -> *CPLEX*). Note that this downloads the whole CPLEX suite, but user only needs the executable file named `cplex`.
+
+### Usage
+
+For a guide how to run a PHONEMeS analysis, please refer to the dedicated [documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples).
 
 ### References
 
