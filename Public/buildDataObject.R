@@ -103,6 +103,6 @@ buildDataObject <- function(ttList = ttList, pThresh = 0.1, pValIdx = 6, measIdx
   
   print("DONE!!!")
   
-  return(list=c("GMM.ID", "GMM","GMM.wFC"))
+  return(list("GMM.ID"=GMM.ID, "GMM"=GMM, "GMM.wFC"=GMM.wFC))
   
 }
