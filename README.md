@@ -4,7 +4,7 @@ ILP implementation of PHONEMeS - Enio GJERGA
 **PHONEMeS** (**PHO**sphorylation **NE**tworks for **M**ass **S**pectrometry) is a method to model signalling networks based on untargeted phosphoproteomics mass spectrometry data and kinase/phosphatase-substrate interactions. 
 Please see [Terfve et al.](http://www.nature.com/articles/ncomms9033) for an explanation of the methodolgy.
 
-This repository contains the scripts of the ILP (Integer Linear Programming) implementation of the [PHONEMeS R package](https://github.com/saezlab/PHONEMeS/tree/master/Package) and accompanying scripts that implement the method. ILP is a mathematical optimisation problem in which the objective function and constraints are linear, while the variables are integers.
+This repository contains the scripts for the ILP (Integer Linear Programming) implementation of the [PHONEMeS R package](https://github.com/saezlab/PHONEMeS/tree/master/Package) and accompanying scripts that implement the method. ILP is a mathematical optimisation algorithm in which the objective function and constraints are linear and the variables are integers.
 
 ### License
 
@@ -12,15 +12,18 @@ Distributed under the GNU GPLv3 License. See accompanying file [LICENSE.txt](htt
 
 ### Installation
 
-Before using the method, please install the current R package for PHONEMeS. For installation, download the tar file of the package and type in R:
+Before using the method, please install the current R package for [PHONEMeS](https://github.com/saezlab/PHONEMeS). For installation, download the tar file of the package and type in R:
 
 ```R
 install.packages("PHONEMeS_0.2.7.tar.gz", repos=NULL)
 ```
 
+The ILP formulation contained in this repository does not need installation, just download and run the desired scripts (see [Documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples) for more information).
+
 Other supportive R packages needed are:
 
 *igraph* which you can easily install by typing in R the below line:
+
 ```R
 install.packages("igraph")
 ```
@@ -37,11 +40,7 @@ For a guide how to run a PHONEMeS analysis, please refer to the dedicated [docum
 
 ### CPLEX
 
-PHONEMeS-ILP is CPLEX depndent meaning that the user needs to obtain an IBM ILOG CPLEX licence and then save the executable file to the working directory. The IBM ILOG CPLEX Optimization Studio license can be obtained for free by:
-
-* Students: https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=9b4eadea-9776-e611-9421-b8ca3a5db7a1
-
-* Teachers, researchers and university staff: https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=6fcc1096-7169-e611-9420-b8ca3a5db7a1
+PHONEMeS-ILP depends on the CPLEX solver, meaning that the user needs to obtain an IBM ILOG CPLEX license and then save the executable file on the working directory. The IBM ILOG CPLEX Optimization Studio license can be obtained for free by students and faculty staff/researchers [here](https://ibm.onthehub.com/) (under *Data & Analytics* -> *Software* -> *CPLEX*). Note that this downloads the whole CPLEX suite, but user only needs the executable file named `cplex`.
 
 ### References
 
