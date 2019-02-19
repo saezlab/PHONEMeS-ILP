@@ -18,6 +18,7 @@
 # interaction data frame and a list of drug targets
 
 require(igraph)
+require(BioNet)
 
 build_PKN <-function(data.On,targets.On, bg,
                      nK=c("all","no", "drugs2data", "data")){
