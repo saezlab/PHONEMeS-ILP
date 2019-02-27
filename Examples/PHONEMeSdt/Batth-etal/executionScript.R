@@ -27,7 +27,6 @@ source("../../../Public/ilpFunctions.R")
 source("../../../Public/buildDataObject.R")
 source("../../../Public/build_Nw.R")
 source("../../../Public/build_PKN.R")
-source("groupResidues.R")
 
 load(paste0(getwd(), "/dataObject/GMM.ID.RData"))
 load(paste0(getwd(), "/dataObject/GMM.RData"))
