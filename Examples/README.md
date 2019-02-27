@@ -1,30 +1,56 @@
 # Running PHONEMeS
 
-Running PHONEMeS-ILP is easy and straightforward once you have downloaded and installed [R](https://www.r-project.org/) on your computer and get a license for the [IBM CPLEX Optimizer](https://www-01.ibm.com/software/commerce/optimization/cplex-optimizer/) which can be obtained for free for academic use. Also required is to have installed the supportive [R packages](https://github.com/saezlab/PHONEMeS-ILP) mentioned.
+Running PHONEMeS-ILP is easy and straightforward once you have downloaded and installed [R](https://www.r-project.org/) on your computer and get a license for the [IBM CPLEX Optimizer](https://ibm.onthehub.com/) which can be obtained for free for academic use. Also required is to have installed the supportive R packages mentioned in the main [README](https://github.com/saezlab/PHONEMeS-ILP).
 
-The pipeline is the same for all the case studies present in the Examples repository:
+The pipeline is the same for all the case studies present in the Examples folder:
 
 ## Data input
 
-* Download and save the data in a local folder where you wish to perform the analysis. The data folder will typicaly contain a background network containing a set of possible kinase to substrate interactions which we might obtain from multiple online data-bases such as Omnipath. It will also contain the results from the GMM.
+* Download and save the data in a local folder where you wish to perform the analysis. The data folder will typically contain a background network containing a set of possible kinase to substrate interactions which we might obtain from multiple online data-bases such as [OmniPath](http://omnipathdb.org/ptms?types=phosphorylation,dephosphorylation). This folder will also contain the results from the Gaussian Mixture Model (GMM).
 
-* On your working directory, download and save the files present on the [Public](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Public) repository. These files mainly represnt the scripts where the functions which implement the ILP method are written. Also on this repository you will find the *.txt* files containing the commands which will be executed by the CPLEX exe file.
+* On your working directory, download and save the files present on the [Public](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Public) repository. These are the scripts containing the functions which implement the different ILP methods.
 
-* On your working directory, download and save the files present on the Codes (```buildDataMatrix.R``` and ```executionScript.R```) folder of each example.
+* On your working directory, download or create your own execution script files.
+
+## Creating the PHONEMeS inputs
+
+* The inputs of PHONEMeS are: 
+
+**  1) A data-object containing information about the measurements as a list (fold changes, p-values, perturbation status and the score) and if necessary a mapping table (i.e. from peptide ID's to gene identifiers).
+
+*** An example about how we create an input data-object can be found [here](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples/PHONEMeSdt/Batth-etal/dataObject). First over the **mmc2.csv** dataset of the [study](https://www.ncbi.nlm.nih.gov/pubmed/29514104) we perform a differential expression anlysis with *Limma* over each experimental condition compared to the control samples as done in the `exploration.R`. For each experiment we obtain a table-to object containing the fold-changes, p-values, adjausted p-values, etc.. We combine each table in a single list and name the elements of the list accordingly.
+
+*** In `prepareGMM.R` script we then prepare the data-object input for PHONEMeS by simply calling the `buildInputs` function. Here we can specify the thresholds for the fold changes of what we want to consider as perturbed and the threshold for the significance for each experimental condition. We save and store these inputs on the working directory.
+
+**  2) A background network containig a list of kinase/phosphatase to substrate interactions and possibly directed and signed protein interactions.
+
+*** An example about how we create an input background network can be found [here](https://github.com/saezlab/PHONEMeS-ILP/blob/master/Examples/PHONEMeSdt/Batth-etal/Background-Network/buildBN.R).
+
+*** On the `buildBN.R` script one can see how to combine possible links from many databases (here Omnipath and STRING) and how we can combine different kind of interactions into a single background network which is then used for the training. Note that for directed and signed protein interactions one has to assign the residue symbol as **R** and the position as **1**.
 
 ## Running the scripts
 
-* By sourcing the ```buildDataMatrix.R``` and ```ilpFunctions.R``` scripts you are calling the necessay functions needed to write the objective function, bounds and constraints of the ILP problem.
+* After having prepared all the inputs in the right format, one can run PHONEMeS as shown in the `executionScript.R` files. Different applications of PHONEMeS might have slightly different ways on preparing the analysis, however in general this script should contain:
 
-* Then by running the ```executionScript.R``` you execute all the functions called from which you obtain the final *resultsSIF.txt* file which is basically the result that PHONEMeS gives you and which represents the optimal reconstructed pathway activity model and which can be visualized in Cytoscape.
+**  All the inputs created and functions loaded
+
+**  A **bg** and **dataGMM** object created as shown in the examples.
+
+**  A **conditions** list containing the labels assigned to each experimental condition.Should match the names assigned to the rows of the data input objects.
+
+**  A list of targets being perturbed at each experimental condition.
+
+**  A list of experimental conditions one would like to consider when performing the PHONEMeS analysis.
+
+* Then we execute the `executionScript.R` in order to solve the optimization problem and obtain the final sif file which is basically the resulting network generated by PHONEMeS representing the optimal reconstructed pathway activity model and which can be easily visualized in [Cytoscape](https://cytoscape.org/).
 
 
 ## Network Visualization
 
-* *resultsSIF.txt* is a *sif* representation of our model and it can be easily loaded and used by Cytoscape for visualization.
+* The *sif* representation of our model and it can be easily loaded and used by Cytoscape for visualization.
 
-* For a nicer visualization of our resulting network, run first the ```visualNetwork.R``` script of the Codes repository which will assign the node attributes to each of the kinases/phosphosites present in our model. Then, by "Import Table from File" in cytoscape, you import the resulting *nodesAttributes.txt* file by making sure that the column containing the attributes is named ```nodesP```.
+* For a nicer visualization of our resulting network, run first the `visualNetwork.R` script of the Codes repository which will assign the node attributes to each of the kinases/phosphosites present in our model. Then, by "Import Table from File" in cytoscape, you import the resulting nodes-attributes as created after running *assignAttributes* function over the resulting network we have obtained.
 
-* Then by “Import Styles” you import the visual properties by selecting the ```PHONEMeS_vizmap.props``` which can be found on the Results folder.
+* Then by “Import Styles” you import the visual properties by selecting the `PHONEMeS_vizmap.props` which can be found on the Results folder.
 
-* Select ```default_0``` on Styles and then you will get a nice visualization of the network.
+* Select `default_0` on Styles and then you will get a nice visualization of the network.
