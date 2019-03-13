@@ -1,0 +1,154 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+library(readr)
+library(omicToolsTest)
+library(viper)
+library(fgsea)
+library(vsn)
+library(limma)
+require(igraph)
+require(dplyr)
+library(visNetwork)
+library(threejs)
+
+url <- paste0(
+  'http://omnipathdb.org/ptms?',
+  'fields=sources,references&genesymbols=1'
+)
+
+download_omnipath <- function(){
+  
+  read.table(url, sep = '\t', header = TRUE)
+  
+}
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+comb_metastasis_vs_cancer <- as.data.frame(read_delim("Documents/PHONEMeS-ILP/Examples/VHL/comb_metastasis_vs_cancer.txt", 
+    "\t", escape_double = FALSE, trim_ws = TRUE))
+
+names(comb_metastasis_vs_cancer) <- c("from","sign","to")
+comb_metastasis_vs_cancer$arrows <- "to"
+
+attributes_metastasis_vs_cancer <- as.data.frame(read_delim("Documents/PHONEMeS-ILP/Examples/VHL/attributes_metastasis_vs_cancer.txt", 
+    "\t", escape_double = FALSE, trim_ws = TRUE))
+names(attributes_metastasis_vs_cancer) <- c("id","state")
+
+attributes_metastasis_vs_cancer$shape <- "circle"
+attributes_metastasis_vs_cancer[62:129,3] <- "triangle"
+
+attributes_metastasis_vs_cancer$color <- "grey"
+attributes_metastasis_vs_cancer[attributes_metastasis_vs_cancer$shape == "circle" & !is.na(attributes_metastasis_vs_cancer$state),4] <- "green"
+attributes_metastasis_vs_cancer[attributes_metastasis_vs_cancer$shape == "triangle" & !is.na(attributes_metastasis_vs_cancer$state),4] <- "blue"
+
+attributes_metastasis_vs_cancer$size <- 10
+attributes_metastasis_vs_cancer[attributes_metastasis_vs_cancer$shape == "triangle",5] <- 10
+
+attributes_metastasis_vs_cancer$label <- attributes_metastasis_vs_cancer$id
+
+attributes_metastasis_vs_cancer <- attributes_metastasis_vs_cancer[,-2]
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+visNetwork(nodes = attributes_metastasis_vs_cancer, edges = comb_metastasis_vs_cancer)
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
+
+```{r, message=FALSE, warning=FALSE,results='hide',fig.keep='all', include = FALSE, fig.width=10,fig.height=10}
+
+```
