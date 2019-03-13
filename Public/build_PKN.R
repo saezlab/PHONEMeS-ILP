@@ -17,6 +17,9 @@
 # This function makes a starting network based on data, a kinase substrate 
 # interaction data frame and a list of drug targets
 
+require(igraph)
+require(BioNet)
+
 build_PKN <-function(data.On,targets.On, bg,
                      nK=c("all","no", "drugs2data", "data")){
   dataNodes<-unique(unlist(speciesP(data.On)))
