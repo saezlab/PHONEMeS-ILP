@@ -59,14 +59,17 @@ runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="
     
     if (solver=="cplex"){
       resultsSIF2 <- solve_with_cplex()
+      resultsSIF2 <- resultsSIF2[,c(3,2,1)]
     } else if (solver=="cbc"){
       resultsSIF2 <- solve_with_cbc()
+      resultsSIF2 <- resultsSIF2[,c(3,2,1)]
     } else {
       stop("Select a valid solver option ('cplex', 'cbc')")
     }
     
     # write.table(resultsSIF, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
     colnames(resultsSIF2) <- c("Source", "Interaction", "Target")
+    # colnames(resultsSIF2) <- c("Target", "Interaction", "Source")
     resultsSIF2[, 2] <- "1"
     
     resultSIF <- resultsSIF1
@@ -81,14 +84,21 @@ runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="
       if(length(idx)>0){
         resultSIF[idx, 2] <- mean(resultSIF[idx, 2], resultsSIF2[ii, 2])
       } else {
-        resultSIF <- rbind(resultSIF, resultsSIF2[ii, ])
+        resultSIF <- rbind(resultSIF, resultsSIF2[ii,])
       }
       
     }
     
     resList <- list()
     resList[[1]] <- resultsSIF1
+    # resList[[2]] <- resultsSIF2
+    # resList[[3]] <- resultSIF
     resList[[2]] <- resultsSIF2
+    # cnt = nrow(resultsSIF2)
+    # for(ii in 1:length(cnt)){
+    #   resultSIF[nrow(resultsSIF1)+ii, 1] = resultSIF[nrow(resultsSIF1)+ii, 3]
+    #   resultSIF[nrow(resultsSIF1)+ii, 3] = resultSIF[nrow(resultsSIF1)+ii, 1]
+    # }
     resList[[3]] <- resultSIF
     
     names(resList) <- c("Downside", "Upside", "Combined")
