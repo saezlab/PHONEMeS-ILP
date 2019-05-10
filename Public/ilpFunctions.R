@@ -1141,20 +1141,24 @@ readOutSIFAll<- function(cplexSolutionFileName, binaries = binaries){
     } else {
       
       # sif <- unique(rbind(sif, sifAll[[ii]]))
-      for(jj in 1:nrow(sifAll[[ii]])){
+      if(nrow(sifAll[[ii]]) > 0){
         
-        idx1 <- which(sif[, 1]==sifAll[[ii]][jj, 1])
-        idx2 <- which(sif[, 3]==sifAll[[ii]][jj, 3])
-        
-        idx <- intersect(x = idx1, y = idx2)
-        
-        if(length(idx) > 0){
+        for(jj in 1:nrow(sifAll[[ii]])){
           
-          sif[idx, 2] <- as.character(as.numeric(sif[idx, 2])+1)
+          idx1 <- which(sif[, 1]==sifAll[[ii]][jj, 1])
+          idx2 <- which(sif[, 3]==sifAll[[ii]][jj, 3])
           
-        } else {
+          idx <- intersect(x = idx1, y = idx2)
           
-          sif <- rbind(sif, sifAll[[ii]][jj, ])
+          if(length(idx) > 0){
+            
+            sif[idx, 2] <- as.character(as.numeric(sif[idx, 2])+1)
+            
+          } else {
+            
+            sif <- rbind(sif, sifAll[[ii]][jj, ])
+            
+          }
           
         }
         
