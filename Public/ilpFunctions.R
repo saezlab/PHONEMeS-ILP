@@ -344,7 +344,7 @@ write_constraints_1 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
       
       constraints1 <- c(constraints1, c1)
       
-      if(sif[ii, 1]%in%dataMatrix$species[dataMatrix$tgID]){
+      if(sif[ii, 1]%in%dataMatrix$species[dataMatrix$tgID[[jj]]]){
         
         constraints1 = c(constraints1, paste0(aa, " + ", bb, " - ", cc, " >= 0"))
         constraints1 = c(constraints1, paste0(aa, " + ", bb, " - ", cc, " <= 1"))
@@ -436,7 +436,7 @@ write_constraints_3 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
       
     } else {
       
-      nNames <- dataMatrix$species[dataMatrix$dnID]
+      nNames <- dataMatrix$species[dataMatrix$dnID[[1]]]
       
     }
     
@@ -507,7 +507,7 @@ write_constraints_4 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
       
     } else {
       
-      nNames <- dataMatrix$species[dataMatrix$dnID]
+      nNames <- dataMatrix$species[dataMatrix$dnID[[1]]]
       
     }
     
@@ -578,7 +578,7 @@ write_constraints_5 <- function(dataMatrix = dataMatrix, binaries = binaries, pk
       
     } else {
       
-      nNames <- dataMatrix$species[dataMatrix$dsID]
+      nNames <- dataMatrix$species[dataMatrix$dsID[[1]]]
       
     }
     
