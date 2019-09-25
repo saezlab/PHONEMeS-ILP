@@ -13,8 +13,20 @@ source("../../../Public/build_Nw.R")
 source("../../../Public/build_PKN.R")
 
 # Loading database and dat-object
-load(file='allD_noCSK_filt.RData')
+# load(file='allD_noCSK_filt.RData')
+load(file = "prior-matrix-act-0.7.Rdata")
 load(file='dataObjects_PHONEMeS.RData')
+
+allD = prior
+allD = as.data.frame(allD)
+allD[, 1] = as.character(allD[, 1])
+allD[, 2] = as.character(allD[, 2])
+allD[, 3] = as.character(allD[, 3])
+allD[, 4] = as.character(allD[, 4])
+allD[, 5] = as.character(allD[, 5])
+allD[, 6] = as.character(allD[, 6])
+allD[, 7] = as.character(allD[, 7])
+allD[, 8] = as.character(allD[, 8])
 
 #Make the data objects that will be needed
 bg<-new("KPSbg", interactions=allD, species=unique(c(allD$K.ID, allD$S.cc)))

@@ -90,17 +90,17 @@ limmaRes <- runLimma(measurements = batches, targets = targets, comparisons = li
 
 ttop_list <- list()
 
-ttop_PDGF_3min <- topTable(limmaRes[[1]], coef = 1, number = 33312-15792, adjust.method = "fdr")
+ttop_PDGF_3min <- topTable(limmaRes[[1]], coef = 1, number = length(which(complete.cases(limmaRes[[1]]$coefficients))), adjust.method = "fdr") # which is all NA's in the coefficients matrix
 ttop_list[[1]] <- nicettop(ttop_PDGF_3min)
-ttop_IGF1_3min <- topTable(limmaRes[[1]], coef = 2, number = 33312-15792, adjust.method = "fdr")
+ttop_IGF1_3min <- topTable(limmaRes[[1]], coef = 2, number = length(which(complete.cases(limmaRes[[1]]$coefficients))), adjust.method = "fdr")
 ttop_list[[2]] <- nicettop(ttop_IGF1_3min)
-ttop_FGF2_3min <- topTable(limmaRes[[1]], coef = 3, number = 33312-15792, adjust.method = "fdr")
+ttop_FGF2_3min <- topTable(limmaRes[[1]], coef = 3, number = length(which(complete.cases(limmaRes[[1]]$coefficients))), adjust.method = "fdr")
 ttop_list[[3]] <- nicettop(ttop_FGF2_3min)
-ttop_PDGF_15min <- topTable(limmaRes[[1]], coef = 4, number = 33312-15792, adjust.method = "fdr")
+ttop_PDGF_15min <- topTable(limmaRes[[1]], coef = 4, number = length(which(complete.cases(limmaRes[[1]]$coefficients))), adjust.method = "fdr")
 ttop_list[[4]] <- nicettop(ttop_PDGF_15min)
-ttop_IGF1_15min <- topTable(limmaRes[[1]], coef = 5, number = 33312-15792, adjust.method = "fdr")
+ttop_IGF1_15min <- topTable(limmaRes[[1]], coef = 5, number = length(which(complete.cases(limmaRes[[1]]$coefficients))), adjust.method = "fdr")
 ttop_list[[5]] <- nicettop(ttop_IGF1_15min)
-ttop_FGF2_15min <- topTable(limmaRes[[1]], coef = 6, number = 33312-15792, adjust.method = "fdr")
+ttop_FGF2_15min <- topTable(limmaRes[[1]], coef = 6, number = length(which(complete.cases(limmaRes[[1]]$coefficients))), adjust.method = "fdr")
 ttop_list[[6]] <- nicettop(ttop_FGF2_15min)
 
 names(ttop_list) <- c("PDGF_3min", "IGF1_3min", "FGF2_3min", "PDGF_15min", "IGF1_15min", "FGF2_15min")
