@@ -31,8 +31,7 @@ write_self_activating_constraints <- function(pknList = pknList,
     exp <- 
       strsplit(x = distVar[i], 
                split = "_", 
-               fixed = TRUE)[[1]][length(strsplit(x = distVar[i], s
-                                                  plit = "_", 
+               fixed = TRUE)[[1]][length(strsplit(x = distVar[i], split = "_", 
                                                   fixed = TRUE)[[1]])]
     
     cc1 <- c(cc1, 
