@@ -43,8 +43,8 @@ write_equality_constraints <- function(dataMatrix = dataMatrix,
     
     ll[[ii]] = ll[[ii]][-1]
     names(ll)[ii] = 
-      binaries[[1]][which(binaries[[3]]==p
-                          aste0("reaction ", sif[ii, 1], "=", sif[ii, 3]))]
+      binaries[[1]][which(binaries[[3]]==paste0("reaction ", sif[ii, 1], 
+                                                "=", sif[ii, 3]))]
     
   }
   
