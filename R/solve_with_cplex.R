@@ -7,13 +7,11 @@ solve_with_cplex <- function(solverPath){
   
   if (Sys.info()[1]=="Windows") {
     file.copy(from = solverPath,to = getwd())
-    system(paste0("cplex.exe -f cplexCommand_", 
-                  condition,"_",repIndex,".txt"))
+    system(paste0("cplex.exe -f cplexCommand.txt"))
     file.remove("cplex.exe")
     Elapsed_2 <- proc.time() - ptm
   } else {
-    system(paste0(solverPath, " -f cplexCommand_", 
-                  condition,"_",repIndex,".txt"))
+    system(paste0(solverPath, " -f cplexCommand.txt"))
     Elapsed_2 <- proc.time() - ptm
   }
   
