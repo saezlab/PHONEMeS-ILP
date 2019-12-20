@@ -3,7 +3,7 @@
 #'Solving problem via CPLEX
 #'
 
-solve_with_cplex <- function(){
+solve_with_cplex <- function(solverPath){
   
   if (Sys.info()[1]=="Windows") {
     file.copy(from = solverPath,to = getwd())

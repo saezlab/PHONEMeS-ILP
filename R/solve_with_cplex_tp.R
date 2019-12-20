@@ -3,7 +3,7 @@
 #'Solving problem via CPLEX - time-point analysis
 #'
 
-solve_with_cplex_tp <- function(){
+solve_with_cplex_tp <- function(solverPath){
   
   if (Sys.info()[1]=="Windows") {
     file.copy(from = solverPath,to = getwd())

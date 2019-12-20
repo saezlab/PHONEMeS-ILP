@@ -3,7 +3,7 @@
 #'Solving problem via CPLEX
 #'
 
-solve_with_cbc <- function(){
+solve_with_cbc <- function(solverPath){
   cbc_command <- paste0(solverPath, 
                         " testFile.lp solve printi csv solu results_cbc.txt")
   system(cbc_command)
