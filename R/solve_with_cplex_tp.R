@@ -9,10 +9,8 @@ solve_with_cplex_tp <- function(solverPath){
     file.copy(from = solverPath,to = getwd())
     system(paste0("cplex.exe -f cplexCommand.txt"))
     file.remove("cplex.exe")
-    Elapsed_2 <- proc.time() - ptm
   } else {
     system(paste0(solverPath, " -f cplexCommand.txt"))
-    Elapsed_2 <- proc.time() - ptm
   }
   
   # load mapping information
