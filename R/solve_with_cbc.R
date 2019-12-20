@@ -4,7 +4,8 @@
 #'
 
 solve_with_cbc <- function(){
-  cbc_command <- "cbc testFile.lp solve printi csv solu results_cbc.txt"
+  cbc_command <- paste0(solverPath, 
+                        " testFile.lp solve printi csv solu results_cbc.txt")
   system(cbc_command)
   
   # retrieve solution

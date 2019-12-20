@@ -20,7 +20,8 @@ runPHONEMeS <- function(targets.P,
                         experiments, 
                         bg, 
                         nK="all", 
-                        solver="cplex", 
+                        solver="cplex",
+                        solverPath = "~/Documents/cplex",
                         nSolutions=100, 
                         mipgap=0, 
                         relgap=0, 
@@ -55,9 +56,9 @@ runPHONEMeS <- function(targets.P,
                 intensity=intensity, timelimit=timelimit)
   
   if (solver=="cplex"){
-    resultsSIF1 <- solve_with_cplex()
+    resultsSIF1 <- solve_with_cplex(solverPath)
   } else if (solver=="cbc"){
-    resultsSIF1 <- solve_with_cbc()
+    resultsSIF1 <- solve_with_cbc(solverPath)
   } else {
     stop("Select a valid solver option ('cplex', 'cbc')")
   }

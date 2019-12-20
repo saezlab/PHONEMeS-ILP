@@ -4,7 +4,18 @@
 #'
 
 solve_with_cplex_tp <- function(){
-  system(paste0(getwd(), "/cplex -f cplexCommand.txt"))
+  
+  if (Sys.info()[1]=="Windows") {
+    file.copy(from = solverPath,to = getwd())
+    system(paste0("cplex.exe -f cplexCommand_", 
+                  condition,"_",repIndex,".txt"))
+    file.remove("cplex.exe")
+    Elapsed_2 <- proc.time() - ptm
+  } else {
+    system(paste0(solverPath, " -f cplexCommand_", 
+                  condition,"_",repIndex,".txt"))
+    Elapsed_2 <- proc.time() - ptm
+  }
   
   # load mapping information
   binaries <- readRDS("tmp_binaries.rds")

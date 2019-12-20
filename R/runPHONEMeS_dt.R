@@ -15,7 +15,8 @@
 #' 
 
 runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg, 
-                           nIter = 100, nK="all", solver="cplex"){
+                           nIter = 100, nK="all", solver="cplex", 
+                           solverPath="~/Documents/cplex"){
   
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
@@ -60,9 +61,9 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
                         experiments = conditions[experiments[[jj]]])
         
         if (solver=="cplex"){
-          resultsSIF1 <- solve_with_cplex_tp()
+          resultsSIF1 <- solve_with_cplex_tp(solverPath)
         } else if (solver=="cbc"){
-          resultsSIF1 <- solve_with_cbc()
+          resultsSIF1 <- solve_with_cbc(solverPath)
         } else {
           stop("Select a valid solver option ('cplex', 'cbc')")
         }
@@ -94,9 +95,9 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
                         experiments = conditions[experiments[[jj]]])
         
         if (solver=="cplex"){
-          resultsSIF1 <- solve_with_cplex_tp()
+          resultsSIF1 <- solve_with_cplex_tp(solverPath)
         } else if (solver=="cbc"){
-          resultsSIF1 <- solve_with_cbc()
+          resultsSIF1 <- solve_with_cbc(solverPath)
         } else {
           stop("Select a valid solver option ('cplex', 'cbc')")
         }
