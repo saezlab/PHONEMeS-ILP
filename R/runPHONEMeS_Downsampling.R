@@ -55,7 +55,7 @@ runPHONEMeS_Downsampling <- function(targets.P,
     write_lp_file(dataGMM = temp, pknList = pknList, targets = targets, experiments = conditions)
     
     if (solver=="cplex"){
-      resultsSIF1 <- solve_with_cplex(solverPath)
+      resultsSIF1 <- solve_with_cplex_tp(solverPath)
     } else if (solver=="cbc"){
       resultsSIF1 <- solve_with_cbc(solverPath)
     } else {
