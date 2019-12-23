@@ -52,10 +52,10 @@ runPHONEMeS_Downsampling <- function(targets.P,
     
     TG <- unique(unlist(targets.P))
     
-    write_lp_file_1(dataGMM = temp, pknList = pknList, targets = targets, experiments = conditions)
+    write_lp_file_downsampling(dataGMM = temp, pknList = pknList, targets = targets, experiments = conditions)
     
     if (solver=="cplex"){
-      resultsSIF1 <- solve_with_cplex_tp(solverPath)
+      resultsSIF1 <- solve_with_cplex_downsampling(solverPath)
     } else if (solver=="cbc"){
       resultsSIF1 <- solve_with_cbc(solverPath)
     } else {
