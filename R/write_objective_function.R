@@ -6,6 +6,8 @@
 write_objective_function <- function(dataMatrix = dataMatrix, 
                                      binaries = binaries, sizePen = 0.00001){
   
+  options(scipen=999)
+  
   dM <- dataMatrix[[1]]
   kk <- 1
   objectiveFunction <- "obj:\t"
