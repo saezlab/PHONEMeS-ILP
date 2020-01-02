@@ -68,14 +68,18 @@ write_lp_file_2 <- function(prevSIF, dataGMM, pknList, targets, experiments){
                                      resultsSIF1 = createSIF(pknList = pknList))
   
   # Writeing Constraint - 7
-  c7 <- write_in_out_constraints(binaries = binaries, targets = targets, 
-                                 dataMatrix = dataMatrix, pknList = pknList)
+  # c7 <- write_in_out_constraints(binaries = binaries, targets = targets, 
+  #                                dataMatrix = dataMatrix, pknList = pknList)
   
   # Putting all constraints together in one file
+  # allC <- all_constraints(equalityConstraints = eC, constraints1 = c1, 
+  #                         constraints2 = c2, constraints3 = c3, 
+  #                         constraints4 = c4, constraints5 = c5, 
+  #                         constraints6 = c(c6, c7))
   allC <- all_constraints(equalityConstraints = eC, constraints1 = c1, 
                           constraints2 = c2, constraints3 = c3, 
                           constraints4 = c4, constraints5 = c5, 
-                          constraints6 = c(c6, c7))
+                          constraints6 = c6)
   
   # write(bounds, file = "bounds.txt")
   # write(binaries[[1]], file = "Integers.txt")
