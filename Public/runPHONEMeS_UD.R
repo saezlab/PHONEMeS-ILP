@@ -10,7 +10,7 @@
 #' @param solver Solver to use for solving the ILP.
 #
 #' @return SIF like data.frame with the output network.
-runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex", mipgap=0, relgap=0, timelimit=300){
+runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex"){
   
   conditions <- conditions[experiments]
   valid_solver_list <- c("cplex", "cbc")
@@ -31,7 +31,7 @@ runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="
   
   TG <- unique(unlist(targets.P))
   
-  write_lp_file_1(dataGMM = dataGMM, pknList = pknList, targets = targets.P, experiments = conditions, mipgap=mipgap, relgap=relgap, timelimit=timelimit)
+  write_lp_file_1(dataGMM = dataGMM, pknList = pknList, targets = targets.P, experiments = conditions)
   
   if (solver=="cplex"){
     resultsSIF1 <- solve_with_cplex()
@@ -55,18 +55,21 @@ runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="
     
     TG <- unlist(targets.P)
     
-    write_lp_file_2(dataGMM = dataGMM, pknList = pknList, targets = targets.P, experiments = conditions, mipgap=mipgap, relgap=relgap, timelimit=timelimit)
+    write_lp_file_2(dataGMM = dataGMM, pknList = pknList, targets = targets.P, experiments = conditions)
     
     if (solver=="cplex"){
       resultsSIF2 <- solve_with_cplex()
+      resultsSIF2 <- resultsSIF2[,c(3,2,1)]
     } else if (solver=="cbc"){
       resultsSIF2 <- solve_with_cbc()
+      resultsSIF2 <- resultsSIF2[,c(3,2,1)]
     } else {
       stop("Select a valid solver option ('cplex', 'cbc')")
     }
     
     # write.table(resultsSIF, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
     colnames(resultsSIF2) <- c("Source", "Interaction", "Target")
+    # colnames(resultsSIF2) <- c("Target", "Interaction", "Source")
     resultsSIF2[, 2] <- "1"
     
     resultSIF <- resultsSIF1
@@ -81,14 +84,21 @@ runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="
       if(length(idx)>0){
         resultSIF[idx, 2] <- mean(resultSIF[idx, 2], resultsSIF2[ii, 2])
       } else {
-        resultSIF <- rbind(resultSIF, resultsSIF2[ii, ])
+        resultSIF <- rbind(resultSIF, resultsSIF2[ii,])
       }
       
     }
     
     resList <- list()
     resList[[1]] <- resultsSIF1
+    # resList[[2]] <- resultsSIF2
+    # resList[[3]] <- resultSIF
     resList[[2]] <- resultsSIF2
+    # cnt = nrow(resultsSIF2)
+    # for(ii in 1:length(cnt)){
+    #   resultSIF[nrow(resultsSIF1)+ii, 1] = resultSIF[nrow(resultsSIF1)+ii, 3]
+    #   resultSIF[nrow(resultsSIF1)+ii, 3] = resultSIF[nrow(resultsSIF1)+ii, 1]
+    # }
     resList[[3]] <- resultSIF
     
     names(resList) <- c("Downside", "Upside", "Combined")
@@ -110,7 +120,7 @@ runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="
 }
 
 
-write_lp_file_1 <- function(dataGMM, pknList, targets, experiments, mipgap, relgap, timelimit){
+write_lp_file_1 <- function(dataGMM, pknList, targets, experiments){
   # This function writes the optimization problem to be solved in a *.lp file
   
   # Build the matrix wth the necessary data for all the species in the prior knowledge
@@ -196,15 +206,15 @@ write_lp_file_1 <- function(dataGMM, pknList, targets, experiments, mipgap, relg
   
   data2 = "cplexCommand.txt"
   write("read testFile.lp", data2)
-  write(paste0("set mip tolerances mipgap ", 0), data2, append = TRUE)
-  write(paste0("set mip pool relgap ", 0), data2, append = TRUE)
+  # write(paste0("set mip tolerances mipgap ", 0), data2, append = TRUE)
+  # write(paste0("set mip pool relgap ", 0), data2, append = TRUE)
   write("optimize", data2, append = TRUE)
   write("write results1.txt sol all", data2, append = TRUE)
   write("quit", data2, append = TRUE)
   
 }
 
-write_lp_file_2 <- function(dataGMM, pknList, targets, experiments, mipgap, relgap, timelimit){
+write_lp_file_2 <- function(dataGMM, pknList, targets, experiments){
   # This function writes the optimization problem to be solved in a *.lp file
   
   # Build the matrix wth the necessary data for all the species in the prior knowledge
@@ -290,8 +300,8 @@ write_lp_file_2 <- function(dataGMM, pknList, targets, experiments, mipgap, relg
   
   data2 = "cplexCommand.txt"
   write("read testFile.lp", data2)
-  write(paste0("set mip tolerances mipgap ", 0), data2, append = TRUE)
-  write(paste0("set mip pool relgap ", 0), data2, append = TRUE)
+  # write(paste0("set mip tolerances mipgap ", 0), data2, append = TRUE)
+  # write(paste0("set mip pool relgap ", 0), data2, append = TRUE)
   write("optimize", data2, append = TRUE)
   write("write results1.txt sol all", data2, append = TRUE)
   write("quit", data2, append = TRUE)
@@ -307,7 +317,7 @@ solve_with_cplex <- function(){
   
   # Read the results from the CPLEX and do the necessary processing of the model
   library(XML)
-  resultsSIF1 <- readOutSIFAll(cplexSolutionFileName = "results1.txt", binaries = binaries)
+  resultsSIF1 <- readOutSIF(cplexSolutionFileName = "results1.txt", binaries = binaries)
   colnames(resultsSIF1) <- c("Source", "Interaction", "Target")
   # write.table(resultsSIF1, file = "res1.txt", quote = FALSE, row.names = FALSE, sep = "\t")
   
