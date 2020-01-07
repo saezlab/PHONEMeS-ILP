@@ -15,26 +15,27 @@ Distributed under the GNU GPLv3 License. See accompanying file [LICENSE.txt](htt
 Before using the method, please install the current R package for [PHONEMeS](https://github.com/saezlab/PHONEMeS). For installation, download the tar file of the package and type in R:
 
 ```R
-install.packages("PHONEMeS_0.2.7.tar.gz", repos=NULL)
+# Install PHONEMeS from Github using devtools
+# install.packages('devtools') # in case devtools hasn't been installed
+library(devtools)
+install_github('saezlab/PHONEMeS-ILP')
+# or download the source file from GitHub and install from source
+install.packages('path_to_extracted_CARNIVAL_directory', repos = NULL, type="source")
 ```
 
-The ILP formulation contained in this repository does not need installation, just download and run the desired scripts (see [Documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples) for more information).
+## Running PHONEMeS
 
-Additional dependencies needed are:
-
-*igraph* and *XML* which you can easily install by typing in R the below line:
+The PHONEMeS library can be initialized by:
 
 ```R
-install.packages(c("igraph", "XML"))
+library(PHONEMeS)
 ```
 
-### CPLEX
+A list of tutorials/examples of the PHONEMeS package, can be found [here](https://github.com/saezlab/PHONEMeS-ILP-Examples)
 
-PHONEMeS-ILP depends on the CPLEX solver, meaning that the user needs to obtain an IBM ILOG CPLEX license and then save the executable file on the working directory. The IBM ILOG CPLEX Optimization Studio license can be obtained for free by students and faculty staff/researchers [here](https://ibm.onthehub.com/) (under *Data & Analytics* -> *Software* -> *CPLEX*). Note that this downloads the whole CPLEX suite, but user only needs the executable file named `cplex`.
+### Prerequisites
 
-### Usage
-
-For a guide how to run a PHONEMeS analysis, please refer to the dedicated [documentation](https://github.com/saezlab/PHONEMeS-ILP/tree/master/Examples).
+PHONEMeS requires the interactive version of IBM Cplex or CBC-COIN solver as the network optimiser. The IBM ILOG Cplex is freely available through Academic Initiative [here](https://www.ibm.com/products/ilog-cplex-optimization-studio?S_PKG=CoG&cm_mmc=Search_Google-_-Data+Science_Data+Science-_-WW_IDA-_-+IBM++CPLEX_Broad_CoG&cm_mmca1=000000RE&cm_mmca2=10000668&cm_mmca7=9041989&cm_mmca8=kwd-412296208719&cm_mmca9=_k_Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB_k_&cm_mmca10=267798126431&cm_mmca11=b&mkwid=_k_Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB_k_|470|135655&cvosrc=ppc.google.%2Bibm%20%2Bcplex&cvo_campaign=000000RE&cvo_crid=267798126431&Matchtype=b&gclid=Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB). The [CBC](https://projects.coin-or.org/Cbc) solver is open source and freely available for any user. 
 
 ### References
 
