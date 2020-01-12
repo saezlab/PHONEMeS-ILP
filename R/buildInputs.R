@@ -147,7 +147,7 @@ buildInputs <- function(tableTopList = tableTopList, fcThresh = NULL, pThresh = 
   
   names(dataInput) <- c("IDmap", "res", "resFC")
   
-  save(dataInput, file = "dataInput.RData")
+  dataInput<-new("GMMres", res=dataInput$res, IDmap=dataInput$IDmap, resFC=dataInput$resFC)
   
   return(dataInput)
   
