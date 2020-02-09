@@ -58,6 +58,10 @@ build_PKN <-function(data.On,targets.On, bg,
   #
   if(length(drugNodes) != 1){
     targetVn<-match(drugNodes, V(nw.2use)$name)
+    tempIDX <- which(is.na(targetVn))
+    if(length(tempIDX)>0){
+      targetVn = targetVn[-tempIDX]
+    }
     #for each drug target, look for all shortest paths to all other targets (max 7 nodes) 
     targetPaths<-rep(NA,2)
     for(t in 1:length(targetVn)){
