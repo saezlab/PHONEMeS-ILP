@@ -50,6 +50,12 @@ build_Nw<-function(data.On,targets.On, bg,
       
     }
     
+    if(length(which(bg@interactions$res=="R"))==nrow(bg@interactions)){
+      
+      pkn@interactions = pkn@interactions[complete.cases(pkn@interactions), ]
+      
+    }
+    
     return(pkn)
   } else {
     
