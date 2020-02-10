@@ -26,6 +26,10 @@ removeRedundantNodes <- function(resultsSIF1 = resultsSIF1){
     
   }
   
-  return(temp[-idxToRem, ])
+  if(length(idxToRem)>0){
+    return(temp[-idxToRem, ])
+  } else {
+    return(temp)
+  }
   
 }
