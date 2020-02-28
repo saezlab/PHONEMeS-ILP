@@ -161,8 +161,10 @@ build_PKN <-function(data.On,targets.On, bg,
   targetsSVn<-match(unique(c(targetsPath.I[,"S.ID"], targetsPath.I[,"K.ID"])), 
                     V(nw.2use)$name)
   #I don't want to match the stuff in dataKVn that is already in targetsSVn
-  dataKVn<-dataKVn[!(dataKVn %in% targetsSVn)]
-  dataKVn<-dataKVn[!is.na(dataKVn)]
+  if(any(!(dataKVn %in% targetsSVn))){
+    dataKVn<-dataKVn[!(dataKVn %in% targetsSVn)]
+    dataKVn<-dataKVn[!is.na(dataKVn)]
+  }
   data2targetPaths<-rep(NA,2)
   for(t in 1:length(dataKVn)){
     Paths<-get.all.shortest.paths(g=nw.2use, 
