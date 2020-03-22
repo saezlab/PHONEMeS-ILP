@@ -180,7 +180,7 @@ build_PKN <-function(data.On,targets.On, bg,
       # if(length(x) == 8){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6], x[8:7]))};
       # if(length(x) == 9){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6], x[8:7], x[9, 8]))};
       # if(length(x) == 10){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6], x[8:7], x[9, 8], x[10, 9]))};
-      if(length(x) > 5){return(NA)}})
+      if(length(x) > 7){return(NA)}})
     if(length(Paths) != 0){
       if(length(Paths) == 1){
         data2targetPaths<-rbind(data2targetPaths, Paths[[length(Paths)]])

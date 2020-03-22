@@ -175,7 +175,10 @@ build_PKN_Inv <-function(data.On,targets.On, bg,
       Paths<-lapply(Paths, function(x){if(length(x) == 2){return(x)}; #If more than 4 steps fuck it
         if(length(x) == 3){return(rbind(x[2:1], x[3:2]))};
         if(length(x) == 4){return(rbind(x[2:1], x[3:2], x[4:3]))};
-        if(length(x) >= 5){print(x); return(NA)}})
+        if(length(x) == 5){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4]))};
+        if(length(x) == 6){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5]))};
+        if(length(x) == 7){return(rbind(x[2:1], x[3:2], x[4:3], x[5:4], x[6:5], x[7:6]))};
+        if(length(x) >= 8){print(x); return(NA)}})
       if(length(Paths) != 0){
         if(length(Paths) == 1){
           data2targetPaths<-rbind(data2targetPaths, Paths[[length(Paths)]])
