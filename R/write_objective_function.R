@@ -36,7 +36,7 @@ write_objective_function <- function(dataMatrix = dataMatrix,
   
   for(i in 1:length(binaries[[3]])){
     
-    if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "interaction"){
+    if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "reaction"){
       
       # r1 <- strsplit(
       #   strsplit(binaries[[3]][i], split = " ")[[1]][2], split = "=")[[1]][1]
