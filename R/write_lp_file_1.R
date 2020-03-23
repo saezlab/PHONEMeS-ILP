@@ -102,6 +102,7 @@ write_lp_file_1 <- function(dataGMM, pknList, targets, experiments){
   # write cplexCommand file
   data2 = "cplexCommand.txt"
   write("read testFile.lp", data2)
+  write(paste0("set timelimit ", 120), data2, append = TRUE)
   write(paste0("set mip tolerances mipgap ", 0), data2, append = TRUE)
   write(paste0("set mip pool relgap ", 0), data2, append = TRUE)
   write("optimize", data2, append = TRUE)
