@@ -25,6 +25,7 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
   }
   
   resList <- list()
+  allSites <- names(inputObj@res)
   
   for(ii in 1:nIter){
     
@@ -35,6 +36,9 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
     temp <- inputObj
     temp@res <- temp@res[ss]
     temp@resFC <- temp@resFC[ss]
+    
+    currSites <- names(temp@res)
+    missingSites <- setdiff(x = allSites, y = currSites)
     
     resListSep <- list()
     
@@ -53,8 +57,19 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
         pknList<-build_Nw(data.On=data.P, targets.On=targets, bg=bg, nK=nK)
         pknList@interactions <- bg@interactions
         pknList@species <- unique(c(bg@interactions$S.AC, bg@interactions$S.ID))
+        idx2rem <- c()
+        idx1 <- which(pknList@interactions$S.cc%in%missingSites)
+        if(length(idx1)>0){
+          idx2rem <- c(idx2rem, idx1)
+        }
+        idx2 <- which(pknList@interactions$K.ID%in%missingSites)
+        if(length(idx2)>0){
+          idx2rem <- c(idx2rem, idx2)
+        }
+        idx2rem <- unique(idx2rem)
+        pknList@interactions <- pknList@interactions[-idx2rem, ]
+        pknList@species <- setdiff(pknList@species, missingSites)
         pknListTemp <- pknList
-        
         show(pknList)
         
         TG <- unique(unlist(targets.P))
@@ -83,14 +98,14 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
         
         speciesP(data.P)
         
-        # pknList<-
-        #   build_Nw(data.On=data.P, targets.On=targets.P, bg=bg, nK = "yes")
-        # pknListTemp@interactions <- 
-        #   unique(rbind(pknList@interactions, pknListTemp@interactions))
-        # pknListTemp@species <- 
-        #   unique(c(pknList@species, pknListTemp@species))
-        pknListTemp@interactions <- bg@interactions
-        pknListTemp@species <- unique(c(bg@interactions$S.AC, bg@interactions$S.ID))
+        pknList<-
+          build_Nw(data.On=data.P, targets.On=targets.P, bg=bg, nK = "yes")
+        pknListTemp@interactions <-
+          unique(rbind(pknList@interactions, pknListTemp@interactions))
+        pknListTemp@species <-
+          unique(c(pknList@species, pknListTemp@species))
+        # pknListTemp@interactions <- bg@interactions
+        # pknListTemp@species <- unique(c(bg@interactions$S.AC, bg@interactions$S.ID))
         
         show(pknListTemp)
         
