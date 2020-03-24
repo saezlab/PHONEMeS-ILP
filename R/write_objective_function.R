@@ -41,8 +41,6 @@ write_objective_function <- function(dataMatrix = dataMatrix,
       objectiveFunction <- paste(objectiveFunction, " + ", 
                                  sizePen, " ", binaries[[1]][i], sep = "")
       
-      }
-      
     }
     
   }
