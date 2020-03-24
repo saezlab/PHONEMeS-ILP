@@ -38,46 +38,9 @@ write_objective_function <- function(dataMatrix = dataMatrix,
     
     if(strsplit(binaries[[3]][i], split = " ")[[1]][1] == "reaction"){
       
-      r1 <- strsplit(
-        strsplit(binaries[[3]][i], split = " ")[[1]][2], split = "=")[[1]][1]
-      r2 <- strsplit(
-        strsplit(binaries[[3]][i], split = " ")[[1]][2], split = "=")[[1]][2]
+      objectiveFunction <- paste(objectiveFunction, " + ", 
+                                 sizePen, " ", binaries[[1]][i], sep = "")
       
-      if(grepl(pattern = "_R1", x = r1) || grepl(pattern = "_R1", x = r2)){
-        
-        cc <- c(grepl(pattern = "_R1", x = r1), grepl(pattern = "_R1", x = r2))
-        if(cc[1]==FALSE && cc[2]==TRUE){
-          
-          objectiveFunction <- 
-            paste(objectiveFunction, " - 0.001 ", binaries[[1]][i], sep = "")
-          
-        }
-        else{
-          
-          objectiveFunction <- 
-            paste(objectiveFunction, " - 0.1 ", binaries[[1]][i], sep = "")
-          
-        }
-        
-      }
-      else{
-        
-        # if(grepl(pattern = r2, x = r1)){
-        # 
-        #   objectiveFunction <- paste(objectiveFunction, 
-        #                              " + 0.00001 ", binaries[[1]][i], sep = "")
-        # 
-        # }
-        # else{
-        # 
-        #   objectiveFunction <- paste(objectiveFunction, 
-        #                              " + 0.001 ", binaries[[1]][i], sep = "")
-        # 
-        # }
-        
-        objectiveFunction <- paste(objectiveFunction, " + ", 
-                                   sizePen, " ", binaries[[1]][i], sep = "")
-        
       }
       
     }

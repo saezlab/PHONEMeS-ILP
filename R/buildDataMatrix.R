@@ -41,7 +41,7 @@ buildDataMatrix <- function(dataGMM = dataGMM, pknList = pknList, targets, exper
   
   for(ii in 1:nrow(dataMatrix)){
     
-    cc <- conditions[[ii]]
+    cc <- experiments[[ii]]
     
     for(kk in 1:length(sites)){
       
