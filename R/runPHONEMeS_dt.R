@@ -51,6 +51,8 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
         speciesP(data.P)
         
         pknList<-build_Nw(data.On=data.P, targets.On=targets, bg=bg, nK=nK)
+        pknList@interactions <- bg@interactions
+        pknList@species <- unique(c(bg@interactions$S.AC, bg@interactions$S.ID))
         pknListTemp <- pknList
         
         show(pknList)
@@ -81,12 +83,14 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
         
         speciesP(data.P)
         
-        pknList<-
-          build_Nw(data.On=data.P, targets.On=targets.P, bg=bg, nK = "yes")
-        pknListTemp@interactions <- 
-          unique(rbind(pknList@interactions, pknListTemp@interactions))
-        pknListTemp@species <- 
-          unique(c(pknList@species, pknListTemp@species))
+        # pknList<-
+        #   build_Nw(data.On=data.P, targets.On=targets.P, bg=bg, nK = "yes")
+        # pknListTemp@interactions <- 
+        #   unique(rbind(pknList@interactions, pknListTemp@interactions))
+        # pknListTemp@species <- 
+        #   unique(c(pknList@species, pknListTemp@species))
+        pknListTemp@interactions <- bg@interactions
+        pknListTemp@species <- unique(c(bg@interactions$S.AC, bg@interactions$S.ID))
         
         show(pknListTemp)
         
