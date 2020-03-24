@@ -57,7 +57,7 @@ write_lp_file_2 <- function(prevSIF, dataGMM, pknList, targets, experiments){
   
   # Writing Constraint - 4
   c4 <- write_constraints_4(dataMatrix = dataMatrix, binaries = binaries, 
-                            pknList = pknList)
+                            pknList = pknList, cascade = cascade)
   
   # Writeing Constraint - 5
   c5 <- write_constraints_5(dataMatrix = dataMatrix, binaries = binaries, 

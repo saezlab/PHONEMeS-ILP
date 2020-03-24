@@ -103,7 +103,7 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
         speciesP(data.P)
         
         pknList<-
-          build_Nw(data.On=data.P, targets.On=targets.P, bg=bg)
+          build_Nw(data.On=data.P, targets.On=targets.P, bg=bg, nK="all")
         pknListTemp@interactions <-
           unique(rbind(pknList@interactions[, 1:8], pknListTemp@interactions))
         pknListTemp@species <-

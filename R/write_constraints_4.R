@@ -71,10 +71,16 @@ write_constraints_4 <- function(dataMatrix = dataMatrix,
     
   }
   
-  idx <- which(grepl(pattern = "interaction ATR=ATR_T1989 in experiment", x = binaries[[3]]))
-  if(length(idx)>0){
-    constraints4 <- c(constraints4, paste0(binaries[[1]][idx], " = 1"))
-  }
+  # if(!is.null(cascade)){
+  #   for(ii in 1:nrow(cascade)){
+  #     
+  #     idx <- which(grepl(pattern = paste0("interaction ", cascade[ii, 1], "=", cascade[ii, 2], " in experiment") , x = binaries[[3]]))
+  #     if(length(idx)>0){
+  #       constraints4 <- c(constraints4, paste0(binaries[[1]][idx], " = 1"))
+  #     }
+  #     
+  #   }
+  # }
   
   if(length(grep(pattern = "NA", x = constraints4))==0){
     
