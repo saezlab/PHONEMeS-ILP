@@ -54,21 +54,25 @@ runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg,
         
         speciesP(data.P)
         
-        pknList<-build_Nw(data.On=data.P, targets.On=targets, bg=bg, nK=nK)
-        pknList@interactions <- bg@interactions
-        pknList@species <- unique(c(bg@interactions$S.AC, bg@interactions$S.ID))
+        pknList1<-build_Nw(data.On=data.P, targets.On=targets, bg=bg, nK=nK)
+        pknList2 <- pknList1
+        pknList2@interactions <- bg@interactions
+        pknList2@species <- unique(c(bg@interactions$K.ID, bg@interactions$S.cc))
         idx2rem <- c()
-        idx1 <- which(pknList@interactions$S.cc%in%missingSites)
+        idx1 <- which(pknList2@interactions$S.cc%in%missingSites)
         if(length(idx1)>0){
           idx2rem <- c(idx2rem, idx1)
         }
-        idx2 <- which(pknList@interactions$K.ID%in%missingSites)
+        idx2 <- which(pknList2@interactions$K.ID%in%missingSites)
         if(length(idx2)>0){
           idx2rem <- c(idx2rem, idx2)
         }
         idx2rem <- unique(idx2rem)
-        pknList@interactions <- pknList@interactions[-idx2rem, ]
-        pknList@species <- setdiff(pknList@species, missingSites)
+        pknList2@interactions <- pknList2@interactions[-idx2rem, ]
+        pknList2@species <- setdiff(pknList2@species, missingSites)
+        pknList <- pknList1
+        pknList@interactions <- unique(rbind(pknList1@interactions[, 1:8], pknList2@interactions))
+        pknList@species <- unique(c(pknList1@species, pknList2@species))
         pknListTemp <- pknList
         show(pknList)
         
