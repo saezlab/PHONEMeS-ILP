@@ -4,7 +4,7 @@
 #'
 
 write_objective_function <- function(dataMatrix = dataMatrix, 
-                                     binaries = binaries, sizePen = 0.00001){
+                                     binaries = binaries, sizePen = 0.001){
   
   options(scipen=999)
   
