@@ -49,7 +49,7 @@ PHONEMeS requires the interactive version of IBM Cplex or CBC-COIN solver as the
 
 ## Examples
 
-### MTORi Perturbation Analysis
+### MTORi and PI3Ki-AKTi-MTORi Perturbation Analysis
 
 Here we show the example from [Terfve et al.](http://www.nature.com/articles/ncomms9033) where PHONEMeS was used to model the perturbation effects of MTOR inhibition. We start first by loading the required packages and the necessary PHONEMeS inputs:
 
@@ -122,3 +122,5 @@ write.table(x = resultsMulti, file = "PI3Ki_AKTi_MTORi_sif_downsampling.txt", qu
 nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
 
 ```
+
+### Time-Point Analysis
