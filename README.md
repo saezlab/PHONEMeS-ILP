@@ -46,3 +46,79 @@ PHONEMeS requires the interactive version of IBM Cplex or CBC-COIN solver as the
 [Wilkes et al.](http://www.pnas.org/content/112/25/7719.abstract) (description of parts of the data)
 
 > Wilkes, E. H., Terfve, C., Gribben, J. G., Saez-Rodriguez, J., and Cutillas, P. R. (2015). Empirical inference of circuitry and plasticity in a kinase signaling network. *Proceedings of the National Academy of Sciences of the United States of America,* 112(25):7719–24.
+
+## Examples
+
+### MTORi Perturbation Analysis
+
+Here we show the example from [Terfve et al.](http://www.nature.com/articles/ncomms9033) where PHONEMeS was used to model the perturbation effects of MTOR inhibition. We start first by loading the required packages and the necessary PHONEMeS inputs:
+
+```R
+# Load packages
+library(BioNet)
+library(igraph)
+library(PHONEMeS)
+library(hash)
+library(dplyr)
+library(readxl)
+library(readr)
+
+# Loading database and data-object
+load(file = system.file("NetworKIN_noCSK_filt.RData", package="PHONEMeS"))
+load(file = system.file("inputObj_Terfve.RData", package="PHONEMeS"))
+
+```
+
+Next we...
+
+```R
+#Make the data objects that will be needed
+bg<-new("KPSbg", interactions=allD, species=unique(c(allD$K.ID, allD$S.cc)))
+
+conditions <- list(c("AKT1 - Control", "AKT2 - Control"), c("CAMK1 - Control", "CAMK2 - Control"),
+                   c("EGFR1 - Control", "EGFR2 - Control"), c("ERK1 - Control", "ERK2 - Control"),
+                   c("MEK1 - Control", "MEK2 - Control"), c("MTOR1 - Control", "MTOR2 - Control"),
+                   c("P70S6K1 - Control", "P70S6K2 - Control"), c("PI3K1 - Control", "PI3K2 - Control"),
+                   c("PKC1 - Control", "PKC2 - Control"), c("ROCK1 - Control", "ROCK2 - Control"))
+
+names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
+                       "MP2K1_HUMAN", "MTOR_HUMAN",  "KS6B1_HUMAN", "PK3CA_HUMAN",
+                       "KPCA_HUMAN", "ROCK1_HUMAN")
+
+targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c("KCC2A_HUMAN", "KCC2B_HUMAN", "KCC2C_HUMAN", "KCC2D_HUMAN"), cond3=c("EGFR_HUMAN", "ERBB2_HUMAN"), 
+                cond4=c("MK01_HUMAN", "MK03_HUMAN", "MK14_HUMAN"), cond5=c("MP2K1_HUMAN", "MP2K2_HUMAN"), cond6=c("MTOR_HUMAN"), cond7=c("KS6B1_HUMAN", "KS6B2_HUMAN"), 
+                cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"), cond9=c("KPCA_HUMAN", "KPCB_HUMAN", "KPCG_HUMAN", "KPCE_HUMAN"), cond10=c("ROCK1_HUMAN", "ROCK2_HUMAN"))
+
+```
+
+Then finally...
+
+```R
+# Select experimental condition
+experiments <- c(6) # for MTORi case
+
+# Running PHONEMeS - cplex
+# Run PHONEMeS with multiple solutions from CPLEX
+resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no")
+write.table(x = resultsMulti, file = "MTORi_sif_cplex.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
+
+```
+
+For multiple conditions...
+
+```R
+# Select experimental condition
+experiments <- c(1, 6, 8) # for PI3Ki-AKTi-MTORi case
+
+# Running PHONEMeS - cplex
+# Run PHONEMeS with multiple solutions from CPLEX
+resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no", populate = 100)
+write.table(x = resultsMulti, file = "PI3Ki_AKTi_MTORi_sif_cplex.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+resultsMulti <- runPHONEMeS_Downsampling(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, nIter = 100, nK = "no")
+write.table(x = resultsMulti, file = "PI3Ki_AKTi_MTORi_sif_downsampling.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
+
+```
