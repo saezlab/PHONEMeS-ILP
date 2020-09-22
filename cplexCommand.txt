@@ -1,6 +1,0 @@
-read testFile.lp
-set mip tolerances mipgap 0
-set mip pool relgap 0
-optimize
-write results1.txt sol all
-quit
