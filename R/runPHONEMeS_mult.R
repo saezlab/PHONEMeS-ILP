@@ -14,9 +14,9 @@
 #' @return SIF like data.frame with the combined output network.
 #' 
 
-runPHONEMeS_dt <- function(targets.P, conditions, inputObj, experiments, bg, 
-                           nIter = 100, nK="all", solver="cplex", 
-                           solverPath="~/Documents/cplex"){
+runPHONEMeS_mult <- function(targets.P, conditions, inputObj, experiments, bg, 
+                             nIter = 100, nK="all", solver="cplex", 
+                             solverPath="~/Documents/cplex"){
   
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){

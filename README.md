@@ -51,7 +51,9 @@ PHONEMeS requires the interactive version of IBM Cplex or CBC-COIN solver as the
 
 ### MTORi and PI3Ki-AKTi-MTORi Perturbation Analysis
 
-Here we show the example from [Terfve et al.](http://www.nature.com/articles/ncomms9033) where PHONEMeS was used to model the perturbation effects of MTOR inhibition. We start first by loading the required packages and the necessary PHONEMeS inputs:
+Here we show the example from [Terfve et al.](http://www.nature.com/articles/ncomms9033) where PHONEMeS was used to model the perturbation effects of MTOR inhibition. 
+
+We start first by loading the required packages and the necessary PHONEMeS inputs:
 
 ```R
 # Load packages
@@ -69,12 +71,13 @@ load(file = system.file("inputObj_Terfve.RData", package="PHONEMeS"))
 
 ```
 
-Next we...
+Next we prepare the data objwcts which will be used as an input by PHONEMeS.
 
 ```R
-#Make the data objects that will be needed
+# Preparation of the background network from the allD list of K/P-S interactions
 bg<-new("KPSbg", interactions=allD, species=unique(c(allD$K.ID, allD$S.cc)))
 
+# Creating the list where we show the experimental conditions
 conditions <- list(c("AKT1 - Control", "AKT2 - Control"), c("CAMK1 - Control", "CAMK2 - Control"),
                    c("EGFR1 - Control", "EGFR2 - Control"), c("ERK1 - Control", "ERK2 - Control"),
                    c("MEK1 - Control", "MEK2 - Control"), c("MTOR1 - Control", "MTOR2 - Control"),
@@ -85,13 +88,14 @@ names(conditions) <- c("AKT1_HUMAN", "KCC2D_HUMAN", "EGFR_HUMAN", "MK01_HUMAN",
                        "MP2K1_HUMAN", "MTOR_HUMAN",  "KS6B1_HUMAN", "PK3CA_HUMAN",
                        "KPCA_HUMAN", "ROCK1_HUMAN")
 
+# For each experimental condition we assign a perturbation target
 targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c("KCC2A_HUMAN", "KCC2B_HUMAN", "KCC2C_HUMAN", "KCC2D_HUMAN"), cond3=c("EGFR_HUMAN", "ERBB2_HUMAN"), 
                 cond4=c("MK01_HUMAN", "MK03_HUMAN", "MK14_HUMAN"), cond5=c("MP2K1_HUMAN", "MP2K2_HUMAN"), cond6=c("MTOR_HUMAN"), cond7=c("KS6B1_HUMAN", "KS6B2_HUMAN"), 
                 cond8=c("PK3CA_HUMAN", "PK3CD_HUMAN", "MTOR_HUMAN"), cond9=c("KPCA_HUMAN", "KPCB_HUMAN", "KPCG_HUMAN", "KPCE_HUMAN"), cond10=c("ROCK1_HUMAN", "ROCK2_HUMAN"))
 
 ```
 
-Then finally...
+Then finally we perform the PHONEMeS analysis for the MTOR inhibition experiment (condition 6).
 
 ```R
 # Select experimental condition
@@ -99,14 +103,14 @@ experiments <- c(6) # for MTORi case
 
 # Running PHONEMeS - cplex
 # Run PHONEMeS with multiple solutions from CPLEX
-resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no")
+resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no", solverPath = path_to_executable_solver)
 write.table(x = resultsMulti, file = "MTORi_sif_cplex.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 
 nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
 
 ```
 
-For multiple conditions...
+For running PHONEMeS by considering multiple conditions we can consider the case where we wish to retrieve consensus network solutions for when combining evidences from the PI3Ki-AKTi-MTORi inhibition experimental conditions. This analysis can be performed either by requesting multiple solutions directly from the CPLEX options or by performing PHONEMeS analysis multiple times by randomly downsampling the measurements and retrieving one solution for each iteration. These single solutions are then integrated into a combined network. With increasing number of experimental conditions, the number of possible solutions is expected to increase substantially and the Downsampling porcedure is advised to be used for these situations since it integrates single solutions in a more unbiased manner and the integrated network is sparser.
 
 ```R
 # Select experimental condition
@@ -114,7 +118,7 @@ experiments <- c(1, 6, 8) # for PI3Ki-AKTi-MTORi case
 
 # Running PHONEMeS - cplex
 # Run PHONEMeS with multiple solutions from CPLEX
-resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no", populate = 100)
+resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no", populate = 100, solverPath = path_to_executable_solver)
 write.table(x = resultsMulti, file = "PI3Ki_AKTi_MTORi_sif_cplex.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 resultsMulti <- runPHONEMeS_Downsampling(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, nIter = 100, nK = "no")
 write.table(x = resultsMulti, file = "PI3Ki_AKTi_MTORi_sif_downsampling.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
@@ -124,3 +128,48 @@ nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targ
 ```
 
 ### Time-Point Analysis
+
+Here we show an example about how to perform PHONEMeS analsysis over phosphoproteomics time-course data. The example refers to the study from [Schaefer et al. 2019](https://www.embopress.org/doi/full/10.15252/msb.20198828). The PHONEMeS inputs used for this example have been prepared as described in detail in the separate [dedicated github repository](https://github.com/saezlab/EDN_phospho) of this study.
+
+We start first by loading the required packages and the necessary PHONEMeS inputs for this example:
+
+```R
+# Load packages
+library(BioNet)
+library(igraph)
+library(PHONEMeS)
+library(hash)
+library(dplyr)
+library(readxl)
+library(readr)
+
+# Loading database and data-object
+load(file = system.file("interactions_schaefer.RData", package="PHONEMeS"))
+load(file = system.file("dataUACC257.RData", package="PHONEMeS"))
+
+```
+
+Next we prepare the data objwcts which will be used as an input by PHONEMeS.
+
+```R
+# Preparing background network as a PHONEMeS input
+bg<-new("KPSbg", interactions=allD, species=unique(c(allD$K.ID, allD$S.cc)))
+dataGMM<-new("GMMres", res=GMM, IDmap=GMM.ID, resFC=GMM.wFC)
+
+# Choose the conditions for each time-point
+conditions <- list(c("tp_2min"), c("tp_10min"), c("tp_30min"), c("tp_60min"), c("tp_90min"))
+names(conditions) <- c("tp_2min", "tp_10min", "tp_30min", "tp_60min", "tp_90min")
+
+# Choose the targets for each time-point (EDNRB - the same)
+targets.P <- list(tp_2min=c("EDNRB_HUMAN"), tp_10min=c("EDNRB_HUMAN"), tp_30min=c("EDNRB_HUMAN"), tp_60min=c("EDNRB_HUMAN"), tp_90min=c("EDNRB_HUMAN")) 
+
+```
+
+Next we perform the PHONEMeS analysis to obtain the time-course modelling of signalling. We perform this analysis 100 times where for each iteration we retain a random sample of measurements. Each solution at each iteration contains one time-course signalling model which in the end is then combined into one integrated network.
+
+```R
+# Running multiple time-point variant of PHONEMeS
+resList = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, dataGMM = dataGMM, experiments = experiments, bg = bg, nIter = 100)
+
+```
+
