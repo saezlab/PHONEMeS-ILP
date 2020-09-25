@@ -183,3 +183,114 @@ write.table(x = nodeAttribudes, file = "ednrb_attributes.txt", quote = FALSE, se
 ```
 
 ### PHONEMeS Upside-Down Analysis
+
+As always, we start first by loading the required packages and the necessary PHONEMeS inputs for this example:
+```R
+# Load packages
+library(BioNet)
+library(igraph)
+library(PHONEMeS)
+library(hash)
+library(dplyr)
+library(readxl)
+library(readr)
+library(limma)
+library(OmnipathR)
+
+# Load data
+load(file = system.file("colon_cancer_data.RData", package="PHONEMeS"))
+load(file = system.file("colon_cancer_kinase_activities.RData", package="PHONEMeS"))
+
+```
+
+From the Colon Cancer data we perform a differential analysis to estimate differentially regulated phospho-sites between the tumour and health samples. For that we rely on the [Limma R-Package](https://bioconductor.org/packages/release/bioc/html/limma.html) and the built-in PHONEMeS functions specifically designed for this purpose.
+
+```R
+# Differential analysis with Limma
+
+# Defining targets
+targets <- matrix(data = , nrow = ncol(colon_cancer_data), ncol = 2)
+targets[, 1] <- colnames(colon_cancer_data)
+targets[, 2] <- sapply(strsplit(x = colnames(colon_cancer_data), split = "_", fixed = TRUE), "[[", 1)
+colnames(targets) <- c("sample", "condition")
+targets <- as.data.frame(targets)
+targets$sample <- as.character(targets$sample)
+targets$condition <- as.character(targets$condition)
+
+# Performing the differential analysis
+limmaRes <- runLimma(measurements = colon_cancer_data, targets = targets, comparisons = list(c(1, -2))) # tumor vs healthy
+ttop <- topTable(fit = limmaRes[[1]], coef = 1, number = nrow(colon_cancer_data), adjust.method = "fdr")
+ttop$ID <- rownames(ttop)
+
+# Generating the table-top object from the Limma analysis result
+ttopList <- list()
+ttopList[[length(ttopList)+1]] <- ttop
+names(ttopList) <- "tumour_vs_healthy"
+
+```
+
+Results from Limma can then be used to build the data-input object of PHONEMeS as below:
+
+```R
+# Build PHONEMeS data-input object
+dataInput <- buildInputs(tableTopList = ttopList, pThresh = 0.01, idxID = 7, idxFC = 1, idxPval = 5, namesConditions = c("tumour_vs_healthy"))
+
+```
+
+PHONEMeS also needs a set Kinase/Phosphatase-Substrate to be used as a prior knowledge network-input which we train to the data. For that we can rely on OmniPath, and for PHONEMeS such a PKN can be built as follows (via the [OmnipathR R-package](https://github.com/saezlab/OmnipathR)):
+
+```R
+# Obtaining the PTMS relations online from OmnipathR package and retaining only phosphorylation/dephosphorylation modifications
+ptms <- get_signed_ptms()
+ptms <- ptms[which(ptms$modification%in%c("phosphorylation", "dephosphorylation")), ]
+
+# Initializing an empty PKN for PHONEMEeS
+bn <- matrix(data = , nrow = nrow(ptms), ncol = 8)
+colnames(bn) <- c("S.AC", "S.ID", "K.AC", "K.ID", "res", "pos", "SID", "S.cc")
+
+# Filling the initialized PKN with information from OmniPath
+bn[, 1] <- ptms$substrate_genesymbol
+bn[, 2] <- ptms$substrate_genesymbol
+bn[, 3] <- ptms$enzyme_genesymbol
+bn[, 4] <- ptms$enzyme_genesymbol
+bn[, 5] <- ptms$residue_type
+bn[, 6] <- ptms$residue_offset
+bn[, 7] <- paste0("e", 1:nrow(bn))
+bn[, 8] <- paste0(ptms$substrate_genesymbol, "_", ptms$residue_type, ptms$residue_offset)
+
+# Making the PKN as a data-frame object
+allD <- as.data.frame(bn)
+allD$S.AC <- as.character(allD$S.AC)
+allD$S.ID <- as.character(allD$S.ID)
+allD$K.AC <- as.character(allD$K.AC)
+allD$K.ID <- as.character(allD$K.ID)
+allD$res <- as.character(allD$res)
+allD$pos <- as.character(allD$pos)
+allD$SID <- paste0("e", 1:nrow(allD))
+allD$S.cc <- as.character(allD$S.cc)
+
+```
+
+Now preparing the other inputs for PHONEMeS and also selecting the most regulated kinases based on kinase enrichment analysis results (with absolute kinase activities higher than 10)
+
+```R
+# Identifying top most regulated kinases
+targetKinases <- kinase_activities$kinase[which(abs(kinase_activities$activity)>=10)]
+
+# Preparation of the background network from the allD list of K/P-S interactions
+bg<-new("KPSbg", interactions=allD, species=unique(c(allD$K.ID, allD$S.cc)))
+
+# Creating the list where we show the experimental conditions
+conditions <- list(c("tumour_vs_healthy"))
+
+names(conditions) <- c("tumour_vs_healthy")
+
+# For each experimental condition we assign a perturbation target
+targets.P<-list(tumour_vs_healthy=targetKinases)
+
+# Select experimental condition
+experiments <- c(1)
+
+```
+
+Finally running the upside-down variant of PHONEMeS and saving the network results.
