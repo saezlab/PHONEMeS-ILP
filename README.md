@@ -127,7 +127,7 @@ nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targ
 
 ```
 
-### Time-Point Analysis
+### Time-Point Analysis for the Modelling of Endothelin Signalling
 
 Here we show an example about how to perform PHONEMeS analsysis over phosphoproteomics time-course data. The example refers to the study from [Schaefer et al. 2019](https://www.embopress.org/doi/full/10.15252/msb.20198828). The PHONEMeS inputs used for this example have been prepared as described in detail in the separate [dedicated github repository](https://github.com/saezlab/EDN_phospho) of this study.
 
@@ -154,22 +154,31 @@ Next we prepare the data objwcts which will be used as an input by PHONEMeS.
 ```R
 # Preparing background network as a PHONEMeS input
 bg<-new("KPSbg", interactions=allD, species=unique(c(allD$K.ID, allD$S.cc)))
-dataGMM<-new("GMMres", res=GMM, IDmap=GMM.ID, resFC=GMM.wFC)
+dataInput<-new("GMMres", res=GMM, IDmap=GMM.ID, resFC=GMM.wFC)
 
 # Choose the conditions for each time-point
 conditions <- list(c("tp_2min"), c("tp_10min"), c("tp_30min"), c("tp_60min"), c("tp_90min"))
 names(conditions) <- c("tp_2min", "tp_10min", "tp_30min", "tp_60min", "tp_90min")
 
 # Choose the targets for each time-point (EDNRB - the same)
-targets.P <- list(tp_2min=c("EDNRB_HUMAN"), tp_10min=c("EDNRB_HUMAN"), tp_30min=c("EDNRB_HUMAN"), tp_60min=c("EDNRB_HUMAN"), tp_90min=c("EDNRB_HUMAN")) 
+targets.P <- list(tp_2min=c("EDNRB_HUMAN"), tp_10min=c("EDNRB_HUMAN"), tp_30min=c("EDNRB_HUMAN"), tp_60min=c("EDNRB_HUMAN"), tp_90min=c("EDNRB_HUMAN"))
+
+# Next we assign the experimental conditions from which we get the measurements at each specific time-point
+# In this case we have the same one experimental condition for each time-point
+experiments <- list(tp1=c(1), tp2=c(2), tp3=c(3), tp4=c(4), tp5=c(5))
 
 ```
 
 Next we perform the PHONEMeS analysis to obtain the time-course modelling of signalling. We perform this analysis 100 times where for each iteration we retain a random sample of measurements. Each solution at each iteration contains one time-course signalling model which in the end is then combined into one integrated network.
 
 ```R
-# Running multiple time-point variant of PHONEMeS
-resList = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, dataGMM = dataGMM, experiments = experiments, bg = bg, nIter = 100)
+# Running multiple time-point variant of PHONEMeS and retain only those interactions which have a weight higher than 20/appear at least 20 times in the
+# separate solutions we have obtained out of the 100 runs we have set to perform (nIter=100).
+set.seed(383789)
+resultsMulti = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, nIter = 100)
+nodeAttribudes <- assignAttributes(sif = resultsMulti[which(resultsMulti[, 2]>=20), ], dataGMM = inputObj, targets = targets.P, writeAttr = FALSE)
 
+write.table(x = resultsMulti[which(resultsMulti[, 2]>=20), ], file = "ednrb_network.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = nodeAttribudes, file = "ednrb_attributes.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 ```
 
