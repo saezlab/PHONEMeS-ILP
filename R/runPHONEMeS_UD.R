@@ -10,7 +10,14 @@
 #' @param solver Solver to use for solving the ILP.
 #
 #' @return SIF like data.frame with the output network.
-runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="all", solver="cplex"){
+runPHONEMeS_UD <- function(targets.P, 
+                           conditions, 
+                           dataGMM, 
+                           experiments, 
+                           bg, 
+                           nK="all", 
+                           solver="cplex", 
+                           solverPath="~/Documents/cplex"){
   
   conditions <- conditions[experiments]
   valid_solver_list <- c("cplex", "cbc")
@@ -34,9 +41,9 @@ runPHONEMeS_UD <- function(targets.P, conditions, dataGMM, experiments, bg, nK="
   write_lp_file_1(dataGMM = dataGMM, pknList = pknList, targets = targets.P, experiments = conditions)
   
   if (solver=="cplex"){
-    resultsSIF1 <- solve_with_cplex()
+    resultsSIF1 <- solve_with_cplex(solverPath)
   } else if (solver=="cbc"){
-    resultsSIF1 <- solve_with_cbc()
+    resultsSIF1 <- solve_with_cbc(solverPath)
   } else {
     stop("Select a valid solver option ('cplex', 'cbc')")
   }
