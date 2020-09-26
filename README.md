@@ -64,6 +64,7 @@ library(hash)
 library(dplyr)
 library(readxl)
 library(readr)
+library(XML)
 
 # Loading database and data-object
 load(file = system.file("NetworKIN_noCSK_filt.RData", package="PHONEMeS"))
@@ -142,6 +143,7 @@ library(hash)
 library(dplyr)
 library(readxl)
 library(readr)
+library(XML)
 
 # Loading database and data-object
 load(file = system.file("interactions_schaefer.RData", package="PHONEMeS"))
@@ -196,6 +198,7 @@ library(readxl)
 library(readr)
 library(limma)
 library(OmnipathR)
+library(XML)
 
 # Load data
 load(file = system.file("colon_cancer_data.RData", package="PHONEMeS"))
