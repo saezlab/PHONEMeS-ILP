@@ -94,7 +94,7 @@ runPHONEMeS_UD <- function(targets.P,
     #   }
     #   
     # }
-    temp <- unique(rbind(resultSIF1, resultSIF2))
+    temp <- unique(rbind(resultsSIF1, resultsSIF2))
     resultSIF <- matrix(data = , nrow = nrow(temp), ncol = 4)
     resultSIF[, 1] <- temp[, 1]
     resultSIF[, 2] <- temp[, 2]
@@ -102,8 +102,8 @@ runPHONEMeS_UD <- function(targets.P,
     resultSIF[, 4] <- "down"
     for(ii in 1:nrow(resultSIF)){
       
-      idx1 <- which(resultSIF2[, 1]==temp[ii, 1])
-      idx2 <- which(resultSIF2[, 3]==temp[ii, 3])
+      idx1 <- which(resultsSIF2[, 1]==temp[ii, 1])
+      idx2 <- which(resultsSIF2[, 3]==temp[ii, 3])
       idx <- intersect(x = idx1, y = idx2)
       if(length(idx)>0){
         

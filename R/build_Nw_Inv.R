@@ -13,7 +13,7 @@ build_Nw_Inv<-function(data.On,targets.On, bg,
   }
   else{
     
-    View(pkn@interactions)
+    # View(pkn@interactions)
     pknList<-PKN_list(pkn, targets.On, data.On)
     
     pkn <- pknList@interactions[complete.cases(pknList@interactions), ]
