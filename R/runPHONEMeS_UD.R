@@ -76,36 +76,52 @@ runPHONEMeS_UD <- function(targets.P,
     
     # write.table(resultsSIF, file = "resultsSIF.txt", quote = FALSE, row.names = FALSE, sep = "\t")
     colnames(resultsSIF2) <- c("Source", "Interaction", "Target")
-    # colnames(resultsSIF2) <- c("Target", "Interaction", "Source")
     resultsSIF2[, 2] <- "1"
     
-    resultSIF <- resultsSIF1
-    for(ii in 1:nrow(resultsSIF2)){
+    # resultSIF <- resultsSIF1
+    # for(ii in 1:nrow(resultsSIF2)){
+    #   
+    #   ss <- resultsSIF2[ii, 1]
+    #   tt <- resultsSIF2[ii, 3]
+    #   idx1 <- which(resultSIF[, 1]==ss)
+    #   idx2 <- which(resultSIF[, 3]==tt)
+    #   idx <- intersect(x = idx1, y = idx2)
+    #   
+    #   if(length(idx)>0){
+    #     resultSIF[idx, 2] <- mean(resultSIF[idx, 2], resultsSIF2[ii, 2])
+    #   } else {
+    #     resultSIF <- rbind(resultSIF, resultsSIF2[ii,])
+    #   }
+    #   
+    # }
+    temp <- unique(rbind(resultSIF1, resultSIF2))
+    resultSIF <- matrix(data = , nrow = nrow(temp), ncol = 4)
+    resultSIF[, 1] <- temp[, 1]
+    resultSIF[, 2] <- temp[, 2]
+    resultSIF[, 3] <- temp[, 3]
+    resultSIF[, 4] <- "down"
+    for(ii in 1:nrow(resultSIF)){
       
-      ss <- resultsSIF2[ii, 1]
-      tt <- resultsSIF2[ii, 3]
-      idx1 <- which(resultSIF[, 1]==ss)
-      idx2 <- which(resultSIF[, 3]==tt)
+      idx1 <- which(resultSIF2[, 1]==temp[ii, 1])
+      idx2 <- which(resultSIF2[, 3]==temp[ii, 3])
       idx <- intersect(x = idx1, y = idx2)
-      
       if(length(idx)>0){
-        resultSIF[idx, 2] <- mean(resultSIF[idx, 2], resultsSIF2[ii, 2])
-      } else {
-        resultSIF <- rbind(resultSIF, resultsSIF2[ii,])
+        
+        resultSIF[ii, 4] <- "up"
+        
       }
       
     }
+    colnames(resultSIF) <- c("Source", "Interaction", "Target", "Direction")
+    resultSIF <- as.data.frame(resultSIF)
+    resultSIF$Source <- as.character(resultSIF$Source)
+    resultSIF$Interaction <- as.character(resultSIF$Interaction)
+    resultSIF$Target <- as.character(resultSIF$Target)
+    resultSIF$Direction <- as.character(resultSIF$Direction)
     
     resList <- list()
     resList[[1]] <- resultsSIF1
-    # resList[[2]] <- resultsSIF2
-    # resList[[3]] <- resultSIF
     resList[[2]] <- resultsSIF2
-    # cnt = nrow(resultsSIF2)
-    # for(ii in 1:length(cnt)){
-    #   resultSIF[nrow(resultsSIF1)+ii, 1] = resultSIF[nrow(resultsSIF1)+ii, 3]
-    #   resultSIF[nrow(resultsSIF1)+ii, 3] = resultSIF[nrow(resultsSIF1)+ii, 1]
-    # }
     resList[[3]] <- resultSIF
     
     names(resList) <- c("Downside", "Upside", "Combined")
@@ -114,6 +130,7 @@ runPHONEMeS_UD <- function(targets.P,
     
   } else {
     
+    print("There was no upside network inferred for this setting.")
     resList <- list()
     resList[[1]] <- resultsSIF1
     resList[[2]] <- NULL
