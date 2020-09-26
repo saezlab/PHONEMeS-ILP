@@ -229,11 +229,13 @@ names(ttopList) <- "tumour_vs_healthy"
 
 ```
 
-Results from Limma can then be used to build the data-input object of PHONEMeS as below:
+Results from Limma can then be used to build the data-input object of PHONEMeS as below. Here we identify as significant those measurements with an
+absolute *log2FC* threshold higher than 2 and adjusted p-value significance lower than 0.01.
 
 ```R
 # Build PHONEMeS data-input object
-dataInput <- buildInputs(tableTopList = ttopList, pThresh = 0.01, idxID = 7, idxFC = 1, idxPval = 5, namesConditions = c("tumour_vs_healthy"))
+dataInput <- buildInputs(tableTopList = ttopList, fcThresh = 2, pThresh = 0.01, idxID = 7, idxFC = 1, 
+                         idxPval = 5, namesConditions = c("tumour_vs_healthy"))
 
 ```
 
@@ -271,11 +273,11 @@ allD$S.cc <- as.character(allD$S.cc)
 
 ```
 
-Now preparing the other inputs for PHONEMeS and also selecting the most regulated kinases based on kinase enrichment analysis results (with absolute kinase activities higher than 10)
+Now preparing the other inputs for PHONEMeS and also selecting the most regulated kinases based on kinase enrichment analysis results (with absolute kinase activities higher than 12).
 
 ```R
 # Identifying top most regulated kinases
-targetKinases <- kinase_activities$kinase[which(abs(kinase_activities$activity)>=10)]
+targetKinases <- kinase_activities$kinase[which(abs(kinase_activities$activity)>=12)]
 
 # Preparation of the background network from the allD list of K/P-S interactions
 bg<-new("KPSbg", interactions=allD, species=unique(c(allD$K.ID, allD$S.cc)))
@@ -293,4 +295,17 @@ experiments <- c(1)
 
 ```
 
-Finally running the upside-down variant of PHONEMeS and saving the network results.
+Finally running the upside-down variant of PHONEMeS and saving the network results. The ```phonemes_ud``` output on this case will consist of a list of three objects: the downside network solution, the upside network solution as well as the combined network solution which integrates the two. These results can then be saved as matrices in a *txt* format which can then be used to visualize the network graph solutions.
+
+```R
+phonemes_ud <- runPHONEMeS_UD(targets.P = targets.P, conditions = conditions, dataGMM = dataInput, experiments = experiments, 
+                              bg = bg, solverPath = path_to_executable_solver)
+
+write.table(x = phonemes_ud$Downside, file = "phonemes_ud_down.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = phonemes_ud$Upside, file = "phonemes_ud_up.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = phonemes_ud$Combined, file = "phonemes_ud_combined.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+nodesAttributes <- assignAttributes(sif = phonemes_ud$Combined, dataGMM = dataInput, targets = targets.P)
+write.table(x = nodesAttributes, file = "nodes_attributes.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+```
