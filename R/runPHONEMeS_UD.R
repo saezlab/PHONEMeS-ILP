@@ -65,10 +65,10 @@ runPHONEMeS_UD <- function(targets.P,
     write_lp_file_inv_2(dataGMM = dataGMM, pknList = pknList, targets = targets.P, experiments = conditions)
     
     if (solver=="cplex"){
-      resultsSIF2 <- solve_with_cplex()
+      resultsSIF2 <- solve_with_cplex(solverPath)
       resultsSIF2 <- resultsSIF2[,c(3,2,1)]
     } else if (solver=="cbc"){
-      resultsSIF2 <- solve_with_cbc()
+      resultsSIF2 <- solve_with_cbc(solverPath)
       resultsSIF2 <- resultsSIF2[,c(3,2,1)]
     } else {
       stop("Select a valid solver option ('cplex', 'cbc')")
