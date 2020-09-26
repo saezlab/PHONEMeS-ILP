@@ -1,3 +1,8 @@
+#'\code{build_PKN_Inv}
+#'
+#'Enio Gjerga
+#'
+
 build_PKN_Inv <-function(data.On,targets.On, bg,
                     nK=c("all","no", "drugs2data", "data")){
   #names(bg@interactions)[1:4] <- names(bg@interactions)[c(3,4,1,2)] #Modified

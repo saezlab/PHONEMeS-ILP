@@ -1,3 +1,8 @@
+#'\code{build_Nw_Inv}
+#'
+#'Enio Gjerga
+#'
+
 build_Nw_Inv<-function(data.On,targets.On, bg,
                   nK=c("all","no", "drugs2data", "data")){
   pkn<-build_PKN_Inv(data.On, targets.On, bg,nK=nK)
