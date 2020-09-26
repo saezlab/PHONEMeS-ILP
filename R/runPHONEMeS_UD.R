@@ -99,15 +99,15 @@ runPHONEMeS_UD <- function(targets.P,
     resultSIF[, 1] <- temp[, 1]
     resultSIF[, 2] <- temp[, 2]
     resultSIF[, 3] <- temp[, 3]
-    resultSIF[, 4] <- "down"
+    resultSIF[, 4] <- "up"
     for(ii in 1:nrow(resultSIF)){
       
-      idx1 <- which(resultsSIF2[, 1]==temp[ii, 1])
-      idx2 <- which(resultsSIF2[, 3]==temp[ii, 3])
+      idx1 <- which(resultsSIF1[, 1]==temp[ii, 1])
+      idx2 <- which(resultsSIF1[, 3]==temp[ii, 3])
       idx <- intersect(x = idx1, y = idx2)
       if(length(idx)>0){
         
-        resultSIF[ii, 4] <- "up"
+        resultSIF[ii, 4] <- "down"
         
       }
       
