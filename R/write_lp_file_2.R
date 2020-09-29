@@ -102,7 +102,6 @@ write_lp_file_2 <- function(prevSIF, dataGMM, pknList, targets, experiments){
   # write cplexCommand file
   data2 = "cplexCommand.txt"
   write("read testFile.lp", data2)
-  write(paste0("set mip pool capacity ", 1), data2, append = TRUE)
   write("optimize", data2, append = TRUE)
   write("write results1.txt sol all", data2, append = TRUE)
   write("quit", data2, append = TRUE)

@@ -91,7 +91,6 @@ write_lp_file_inv_1 <- function(dataGMM, pknList, targets, experiments){
   write("read testFile.lp", data2)
   # write(paste0("set mip tolerances mipgap ", 0), data2, append = TRUE)
   # write(paste0("set mip pool relgap ", 0), data2, append = TRUE)
-  write(paste0("set mip pool capacity ", 1), data2, append = TRUE)
   write("optimize", data2, append = TRUE)
   write("write results1.txt sol all", data2, append = TRUE)
   write("quit", data2, append = TRUE)
