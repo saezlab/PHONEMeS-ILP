@@ -1,7 +1,34 @@
-buildInputs <- function(tableTopList = tableTopList, fcThresh = NULL, pThresh = 0.05, idxID = 1, idxFC = 2, idxPval = 6, mappingTable = NULL, namesConditions = NULL){
+#' Build Inputs for PHONEMeS
+#' 
+#' @param tableTopList 
+#' @param fcThresh
+#' @param pThresh
+#' @param idxID
+#' @param idxFC
+#' @param idxPval
+#' @param mappingTable
+#' @param namesConditions
+#' @param directionality
+#' @param solver Solver to use for solving the ILP.
+#
+#' @return A data-input object for PHONEMeS.
+
+buildInputs <- function(tableTopList = tableTopList, 
+                        fcThresh = NULL, 
+                        pThresh = 0.05, 
+                        idxID = 1, 
+                        idxFC = 2, 
+                        idxPval = 6, 
+                        mappingTable = NULL, 
+                        namesConditions = NULL, 
+                        directionality = "no"){
   
   ###
   # Build GMM.ID object
+  allowed_directionality <- c("up", "down", "no")
+  if((directionality%in%allowed_directionality)==FALSE){
+    stop("Wrong directionality value. It should either be no/up/down")
+  }
   
   if(is.null(mappingTable)){
     
@@ -108,16 +135,52 @@ buildInputs <- function(tableTopList = tableTopList, fcThresh = NULL, pThresh = 
               
             }
           } else {
-            if(abs(tt[which(rownames(tt)==names(GMM)[ii]), idxFC]) >= fcThresh[jj]){
+            
+            if(directionality=="no"){
               
-              GMM[[ii]][jj, 2] <- "P"
-              GMM.wFC[[ii]][jj, 2] <- "P"
+              if(abs(tt[which(rownames(tt)==names(GMM)[ii]), idxFC]) >= fcThresh[jj]){
+                
+                GMM[[ii]][jj, 2] <- "P"
+                GMM.wFC[[ii]][jj, 2] <- "P"
+                
+              } else {
+                
+                GMM[[ii]][jj, 2] <- "C"
+                GMM.wFC[[ii]][jj, 2] <- "C"
+                
+              }
               
             } else {
               
-              GMM[[ii]][jj, 2] <- "C"
-              GMM.wFC[[ii]][jj, 2] <- "C"
-              
+              if(directionality=="up"){
+                
+                if(tt[which(rownames(tt)==names(GMM)[ii]), idxFC] >= fcThresh[jj]){
+                  
+                  GMM[[ii]][jj, 2] <- "P"
+                  GMM.wFC[[ii]][jj, 2] <- "P"
+                  
+                } else {
+                  
+                  GMM[[ii]][jj, 2] <- "C"
+                  GMM.wFC[[ii]][jj, 2] <- "C"
+                  
+                }
+                
+              } else {
+                
+                if(tt[which(rownames(tt)==names(GMM)[ii]), idxFC] <= fcThresh[jj]){
+                  
+                  GMM[[ii]][jj, 2] <- "P"
+                  GMM.wFC[[ii]][jj, 2] <- "P"
+                  
+                } else {
+                  
+                  GMM[[ii]][jj, 2] <- "C"
+                  GMM.wFC[[ii]][jj, 2] <- "C"
+                  
+                }
+                
+              }
             }
           }
           
