@@ -203,6 +203,21 @@ buildInputs <- function(tableTopList = tableTopList,
     
   }
   
+  for(ii in 1:length(GMM)){
+    
+    for(jj in 1:nrow(GMM[[ii]])){
+      
+      if((GMM[[ii]][jj, 2]=="C") && (as.numeric(GMM[[ii]][jj, 1])<0)){
+        
+        GMM[[ii]][jj, 1] <- as.character((-1)*(as.numeric(GMM[[ii]][jj, 1])))
+        GMM.wFC[[ii]][jj, 1] <- as.character((-1)*(as.numeric(GMM.wFC[[ii]][jj, 1])))
+                                             
+      }
+      
+    }
+    
+  }
+  
   dataInput <- list()
   dataInput[[1]] <- GMM.ID
   dataInput[[2]] <- GMM
