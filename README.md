@@ -237,7 +237,7 @@ absolute *log2FC* threshold higher than 2 and adjusted p-value significance lowe
 
 ```R
 # Build PHONEMeS data-input object
-dataInput <- buildInputs(tableTopList = ttopList, fcThresh = 2, pThresh = 0.01, idxID = 7, idxFC = 1, 
+dataInput <- buildInputs(tableTopList = ttopList, fcThresh = log2(2.5), pThresh = 0.05, idxID = 7, idxFC = 1, 
                          idxPval = 5, namesConditions = c("tumour_vs_healthy"))
 
 ```

@@ -2,16 +2,16 @@ Package: PHONEMeS
 Type: Package
 Title: Building logic-based models from discovery high-content
         phosphoproteomics data
-Version: 0.2.7
-Date: 2017-01-02
-Author: C.D.A. Terfve
-Maintainer: C.D.A. Terfve <terfve@ebi.ac.uk>
+Version: 1.0.0
+Date: 18/10/2020
+Author: E. Gjerga, C.D.A. Terfve, A. Dugourd, L. Tobalina
+Maintainer: E. Gjerga <enio.gjerga@gmail.com>
 Description: This package implements a method to build logic-based models of signalling networks 
 	based on mass spectrometry phosphoproteomics data and kinase/phosphatase-substrate relationships. 
 	The method was described in this publication: Large-scale models of signal propagation in human cells 
 	derived from discovery phosphoproteomic data, Terfve et al., Nature Communications, 2015.
 License: GPL-2
 LazyLoad: yes
-URL: https://github.com/saezlab/PHONEMeS
+URL: https://github.com/saezlab/PHONEMeS-ILP
 Packaged: 2017-01-02 09:57:51 UTC; jwirbel
 NeedsCompilation: no
