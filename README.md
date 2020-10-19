@@ -177,8 +177,8 @@ Next we perform the PHONEMeS analysis to obtain the time-course modelling of sig
 # Running multiple time-point variant of PHONEMeS and retain only those interactions which have a weight higher than 20/appear at least 20 times in the
 # separate solutions we have obtained out of the 100 runs we have set to perform (nIter=100).
 set.seed(383789)
-resultsMulti = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, nIter = 100)
-nodeAttribudes <- assignAttributes(sif = resultsMulti[which(resultsMulti[, 2]>=20), ], dataGMM = inputObj, targets = targets.P, writeAttr = FALSE)
+resultsMulti = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, inputObj = dataInput, experiments = experiments, bg = bg, nIter = 100)
+nodeAttribudes <- assignAttributes(sif = resultsMulti[which(resultsMulti[, 2]>=20), ], dataGMM = dataInput, targets = targets.P, writeAttr = FALSE)
 
 write.table(x = resultsMulti[which(resultsMulti[, 2]>=20), ], file = "ednrb_network.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 write.table(x = nodeAttribudes, file = "ednrb_attributes.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
