@@ -98,6 +98,8 @@ targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c("KCC2A_HUMAN", "KCC
 
 Then finally we perform the PHONEMeS analysis for the MTOR inhibition experiment (condition 6).
 
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath <- "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
+
 ```R
 # Select experimental condition
 experiments <- c(6) # for MTORi case
@@ -112,6 +114,8 @@ nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targ
 ```
 
 For running PHONEMeS by considering multiple conditions we can consider the case where we wish to retrieve consensus network solutions for when combining evidences from the PI3Ki-AKTi-MTORi inhibition experimental conditions. This analysis can be performed either by requesting multiple solutions directly from the CPLEX options or by performing PHONEMeS analysis multiple times by randomly downsampling the measurements and retrieving one solution for each iteration. These single solutions are then integrated into a combined network. With increasing number of experimental conditions, the number of possible solutions is expected to increase substantially and the Downsampling porcedure is advised to be used for these situations since it integrates single solutions in a more unbiased manner and the integrated network is sparser.
+
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath <- "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
 
 ```R
 # Select experimental condition
@@ -172,6 +176,8 @@ experiments <- list(tp1=c(1), tp2=c(2), tp3=c(3), tp4=c(4), tp5=c(5))
 ```
 
 Next we perform the PHONEMeS analysis to obtain the time-course modelling of signalling. We perform this analysis 100 times where for each iteration we retain a random sample of measurements. Each solution at each iteration contains one time-course signalling model which in the end is then combined into one integrated network.
+
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath <- "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
 
 ```R
 # Running multiple time-point variant of PHONEMeS and retain only those interactions which have a weight higher than 20/appear at least 20 times in the
@@ -299,6 +305,8 @@ experiments <- c(1)
 ```
 
 Finally running the upside-down variant of PHONEMeS and saving the network results. The ```phonemes_ud``` output on this case will consist of a list of three objects: the downside network solution, the upside network solution as well as the combined network solution which integrates the two. These results can then be saved as matrices in a *txt* format which can then be used to visualize the network graph solutions.
+
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath <- "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
 
 ```R
 phonemes_ud <- runPHONEMeS_UD(targets.P = targets.P, conditions = conditions, dataGMM = dataInput, experiments = experiments, 
