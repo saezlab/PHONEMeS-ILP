@@ -8,6 +8,7 @@
 #' @param bg
 #' @param nK 
 #' @param solver Solver to use for solving the ILP.
+#' @param penFac Penalty factor (default: 0.00001)
 #
 #' @return SIF like data.frame with the output network.
 runPHONEMeS_Downsampling <- function(targets.P, 
@@ -18,7 +19,8 @@ runPHONEMeS_Downsampling <- function(targets.P,
                                      nIter = 100, 
                                      nK="all", 
                                      solver="cplex", 
-                                     solverPath = "~/Documents/cplex"){
+                                     solverPath = "~/Documents/cplex", 
+                                     penFac = 0.00001){
   
   conditions <- conditions[experiments]
   targets <- targets.P[experiments]
@@ -52,7 +54,8 @@ runPHONEMeS_Downsampling <- function(targets.P,
     
     TG <- unique(unlist(targets.P))
     
-    write_lp_file_downsampling(dataGMM = temp, pknList = pknList, targets = targets, experiments = conditions)
+    write_lp_file_downsampling(dataGMM = temp, pknList = pknList, 
+                               targets = targets, experiments = conditions, penFac = penFac)
     
     if (solver=="cplex"){
       resultsSIF1 <- solve_with_cplex_downsampling(solverPath)

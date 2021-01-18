@@ -10,13 +10,14 @@
 #' @param bg
 #' @param nK 
 #' @param solver Solver to use for solving the ILP.
+#' @param penFac Penalty factor (default: 0.00001)
 #
 #' @return SIF like data.frame with the combined output network.
 #' 
 
 runPHONEMeS_mult <- function(targets.P, conditions, inputObj, experiments, bg, 
                              nIter = 100, nK="all", solver="cplex", 
-                             solverPath="~/Documents/cplex"){
+                             solverPath="~/Documents/cplex", penFac=0.00001){
   
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
@@ -58,7 +59,7 @@ runPHONEMeS_mult <- function(targets.P, conditions, inputObj, experiments, bg,
         TG <- unique(unlist(targets.P))
         
         write_lp_file_1(dataGMM = temp, pknList = pknList, targets = targets, 
-                        experiments = conditions[experiments[[jj]]])
+                        experiments = conditions[experiments[[jj]]], penFac = penFac)
         
         if (solver=="cplex"){
           resultsSIF1 <- solve_with_cplex_tp(solverPath)
@@ -92,7 +93,7 @@ runPHONEMeS_mult <- function(targets.P, conditions, inputObj, experiments, bg,
         
         write_lp_file_2(prevSIF = resultsSIF1, dataGMM = temp, 
                         pknList = pknListTemp, targets = targets, 
-                        experiments = conditions[experiments[[jj]]])
+                        experiments = conditions[experiments[[jj]]], penFac = penFac)
         
         if (solver=="cplex"){
           resultsSIF1 <- solve_with_cplex_tp(solverPath)

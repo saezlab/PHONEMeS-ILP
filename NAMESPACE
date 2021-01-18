@@ -3,3 +3,13 @@
 
 # Export all names
 exportPattern(".")
+import(BioNet)
+import(igraph)
+import(tidyverse)
+import(hash)
+import(dplyr)
+import(readxl)
+import(readr)
+import(XML)
+import(limma)
+import(OmnipathR)

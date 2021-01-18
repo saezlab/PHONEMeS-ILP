@@ -13,7 +13,8 @@ write_lp_file <- function(dataGMM,
                           replace, 
                           populate, 
                           intensity, 
-                          timelimit){
+                          timelimit,
+                          penFac){
   # This function writes the optimization problem to be solved in a *.lp file
   
   ## Build the matrix wth the necessary data for all the species in the PKN
@@ -43,7 +44,7 @@ write_lp_file <- function(dataGMM,
   
   # Writing the objective function
   oF <- 
-    write_objective_function(dataMatrix = dataMatrix, binaries = binaries)
+    write_objective_function(dataMatrix = dataMatrix, binaries = binaries, sizePen = penFac)
   
   # Writing the bounds and also all the vvariables
   bounds <- 
