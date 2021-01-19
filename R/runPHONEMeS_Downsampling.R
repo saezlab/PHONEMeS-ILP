@@ -8,7 +8,7 @@
 #' @param bg
 #' @param nK 
 #' @param solver Solver to use for solving the ILP.
-#' @param penFac Penalty factor (default: 0.00001)
+#' @param penFac Penalty factor (default: 0.0001)
 #
 #' @return SIF like data.frame with the output network.
 runPHONEMeS_Downsampling <- function(targets.P, 
@@ -20,7 +20,7 @@ runPHONEMeS_Downsampling <- function(targets.P,
                                      nK="all", 
                                      solver="cplex", 
                                      solverPath = "~/Documents/cplex", 
-                                     penFac = 0.00001){
+                                     penFac = 0.0001){
   
   conditions <- conditions[experiments]
   targets <- targets.P[experiments]

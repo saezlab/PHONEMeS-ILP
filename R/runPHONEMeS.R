@@ -10,7 +10,7 @@
 #' @param bg
 #' @param nK 
 #' @param solver Solver to use for solving the ILP.
-#' @param penFac Penalty factor (default: 0.00001)
+#' @param penFac Penalty factor (default: 0.0001)
 #
 #' @return SIF like data.frame with the combined output network.
 #' 
@@ -30,7 +30,7 @@ runPHONEMeS <- function(targets.P,
                         populate=5000, 
                         intensity=4, 
                         timelimit=3600, 
-                        penFac = 0.00001){
+                        penFac = 0.0001){
   
   conditions <- conditions[experiments]
   valid_solver_list <- c("cplex", "cbc")

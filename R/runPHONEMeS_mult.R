@@ -10,14 +10,14 @@
 #' @param bg
 #' @param nK 
 #' @param solver Solver to use for solving the ILP.
-#' @param penFac Penalty factor (default: 0.00001)
+#' @param penFac Penalty factor (default: 0.0001)
 #
 #' @return SIF like data.frame with the combined output network.
 #' 
 
 runPHONEMeS_mult <- function(targets.P, conditions, inputObj, experiments, bg, 
                              nIter = 100, nK="all", solver="cplex", 
-                             solverPath="~/Documents/cplex", penFac=0.00001){
+                             solverPath="~/Documents/cplex", penFac=0.0001){
   
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){
