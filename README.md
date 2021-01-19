@@ -20,7 +20,7 @@ Before using the method, please install the current R package for [PHONEMeS](htt
 library(devtools)
 install_github('saezlab/PHONEMeS-ILP')
 # or download the source file from GitHub and install from source
-install.packages('path_to_extracted_CARNIVAL_directory', repos = NULL, type="source")
+install.packages('path_to_extracted_PHONEMeS_directory', repos = NULL, type="source")
 ```
 
 ## Running PHONEMeS
