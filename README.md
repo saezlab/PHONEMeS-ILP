@@ -199,10 +199,12 @@ Next we perform the PHONEMeS analysis to obtain the time-course modelling of sig
 # separate solutions we have obtained out of the 100 runs we have set to perform (nIter=100).
 set.seed(383789)
 resultsMulti = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, inputObj = dataInput, experiments = experiments, bg = bg, nIter = 100)
-nodeAttribudes <- assignAttributes(sif = resultsMulti[which(resultsMulti[, 2]>=20), ], dataGMM = dataInput, targets = targets.P, writeAttr = FALSE)
+nodeAttribudes <- assignAttributes(sif = resultsMulti[, c(1, 2, 4)], dataGMM = dataInput, targets = targets.P, writeAttr = FALSE)
 
-write.table(x = resultsMulti[which(resultsMulti[, 2]>=20), ], file = "ednrb_network.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = resultsMulti, file = "ednrb_network.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = resultsMulti[which(as.numeric(resultsMulti[, 2])>=20), ], file = "ednrb_network_20.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 write.table(x = nodeAttribudes, file = "ednrb_attributes.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
 ```
 
 ### PHONEMeS Upside-Down Analysis
