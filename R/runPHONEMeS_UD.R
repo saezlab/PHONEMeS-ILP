@@ -20,7 +20,7 @@ runPHONEMeS_UD <- function(targets.P,
                            nK="all", 
                            solver="cplex", 
                            solverPath="~/Documents/cplex", 
-                           penFac = 0.00001){
+                           penFac = 0.0001){
   
   conditions <- conditions[experiments]
   valid_solver_list <- c("cplex", "cbc")
