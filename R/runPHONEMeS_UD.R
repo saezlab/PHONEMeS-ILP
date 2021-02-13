@@ -8,7 +8,7 @@
 #' @param bg
 #' @param nK 
 #' @param solver Solver to use for solving the ILP.
-#' @param penFac Penalty factor (default: 0.00001)
+#' @param penFac Penalty factor (default: 0.0001)
 #
 #' @return SIF like data.frame with the output network.
 
