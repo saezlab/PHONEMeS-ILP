@@ -3,7 +3,7 @@
 #'Enio Gjerga
 #'
 
-write_lp_file_inv_1 <- function(dataGMM, pknList, targets, experiments){
+write_lp_file_inv_1 <- function(dataGMM, pknList, targets, experiments, penFac){
   # This function writes the optimization problem to be solved in a *.lp file
   
   # Build the matrix wth the necessary data for all the species in the prior knowledge
@@ -23,7 +23,7 @@ write_lp_file_inv_1 <- function(dataGMM, pknList, targets, experiments){
   saveRDS(binaries, file="tmp_binaries.rds")
   
   # Writing the objective function
-  oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries)
+  oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries, sizePen = penFac)
   
   # Writing the bounds and also all the vvariables
   bounds <- write_boundaries(binaries = binaries, pknList = pknList, M = 100, dataMatrix = dataMatrix)

@@ -31,6 +31,9 @@ path to solver (default: "~/Documents/cplex")
   \item{nIter}{
 number of iterations to run/solution to be returned by PHONEMeS (default: 100)
 }
+  \item{penFac}{
+size penalty factor (default: 0.00001)
+}
 }
 \value{
 This function returns the combined network solutions of the time-resolved variant of PHONEMeS. It contains the Source, the Target, the Weight and the Time-Point. The Weight tells how frequently an interaction is present across the different solutioins. The Time-Point tells after which time-point an interaction appears in the solution.

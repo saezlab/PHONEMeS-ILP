@@ -12,15 +12,43 @@ Distributed under the GNU GPLv3 License. See accompanying file [LICENSE.txt](htt
 
 ### Installation
 
-Before using the method, please install the current R package for [PHONEMeS](https://github.com/saezlab/PHONEMeS). For installation, download the tar file of the package and type in R:
+#### 1. Solver Prerequisites
+Before installing PHONEMeS, please keep in mind the following solver pre-requisites:
 
+PHONEMeS requires the interactive version of IBM Cplex or CBC-COIN solver as the network optimiser. The IBM ILOG Cplex is freely available through Academic Initiative [here](https://www.ibm.com/products/ilog-cplex-optimization-studio?S_PKG=CoG&cm_mmc=Search_Google-_-Data+Science_Data+Science-_-WW_IDA-_-+IBM++CPLEX_Broad_CoG&cm_mmca1=000000RE&cm_mmca2=10000668&cm_mmca7=9041989&cm_mmca8=kwd-412296208719&cm_mmca9=_k_Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB_k_&cm_mmca10=267798126431&cm_mmca11=b&mkwid=_k_Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB_k_|470|135655&cvosrc=ppc.google.%2Bibm%20%2Bcplex&cvo_campaign=000000RE&cvo_crid=267798126431&Matchtype=b&gclid=Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB). The [CBC](https://projects.coin-or.org/Cbc) solver is open source and freely available for any user.
+
+Once the solvers has been acquired by the user, they must save the executable files in any desired location in the machine they are using and then they can run the PHONEMeS analysis after specifying the solver type (through the *solver* parameter of the functions, 'cplex' or 'cbc') and the path to the executable file (through the *solverPath* parameter).
+
+**NOTE:** We strongly encourage using cplex to solve the PHONEMeS problems since the tool has been mostly maintained by considering CPLEX in mind and also because it showed to be more efficient computationally.
+
+#### 2. Package Depedencies
+Additionally before installation, the users must install the following R-package depedencies: [BioNet](https://www.bioconductor.org/packages/release/bioc/html/BioNet.html),
+[igraph](https://igraph.org/r/),
+[tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html),
+[hash](https://cran.r-project.org/web/packages/hash/index.html),
+[dplyr](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8),
+[readxl](https://readxl.tidyverse.org/),
+[readr](https://cran.r-project.org/web/packages/readr/index.html),
+[XML](https://cran.r-project.org/web/packages/XML/index.html),
+[limma](https://bioconductor.org/packages/release/bioc/html/limma.html),
+[OmnipathR](https://github.com/saezlab/OmnipathR),
+
+#### 3. Package installation
+Once the required solvers have been obtained and the mentioned R-package depedencies have been installed, then the users can proceed with the installation of PHONEMeS [PHONEMeS](https://github.com/saezlab/PHONEMeS).
+
+For this, the user can install directly from GitHub by using the [devtools](https://www.r-project.org/nosvn/pandoc/devtools.html) package:
 ```R
 # Install PHONEMeS from Github using devtools
-# install.packages('devtools') # in case devtools hasn't been installed
+install.packages('devtools') # in case devtools hasn't been installed
 library(devtools)
 install_github('saezlab/PHONEMeS-ILP')
+```
+
+Otherwise users can install PHONEMeS directly from the source after downloading the source (tar file) and typing in ```R``` command line the following:
+
+```R
 # or download the source file from GitHub and install from source
-install.packages('path_to_extracted_CARNIVAL_directory', repos = NULL, type="source")
+install.packages('path_to_extracted_PHONEMeS_directory', repos = NULL, type="source")
 ```
 
 ## Running PHONEMeS
@@ -30,10 +58,6 @@ The PHONEMeS library can be initialized by:
 ```R
 library(PHONEMeS)
 ```
-
-### Prerequisites
-
-PHONEMeS requires the interactive version of IBM Cplex or CBC-COIN solver as the network optimiser. The IBM ILOG Cplex is freely available through Academic Initiative [here](https://www.ibm.com/products/ilog-cplex-optimization-studio?S_PKG=CoG&cm_mmc=Search_Google-_-Data+Science_Data+Science-_-WW_IDA-_-+IBM++CPLEX_Broad_CoG&cm_mmca1=000000RE&cm_mmca2=10000668&cm_mmca7=9041989&cm_mmca8=kwd-412296208719&cm_mmca9=_k_Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB_k_&cm_mmca10=267798126431&cm_mmca11=b&mkwid=_k_Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB_k_|470|135655&cvosrc=ppc.google.%2Bibm%20%2Bcplex&cvo_campaign=000000RE&cvo_crid=267798126431&Matchtype=b&gclid=Cj0KCQiAr93gBRDSARIsADvHiOpDUEHgUuzu8fJvf3vmO5rI0axgtaleqdmwk6JRPIDeNcIjgIHMhZIaAiwWEALw_wcB). The [CBC](https://projects.coin-or.org/Cbc) solver is open source and freely available for any user. 
 
 ### References
 
@@ -55,9 +79,9 @@ We start first by loading the required packages and the necessary PHONEMeS input
 
 ```R
 # Load packages
+library(PHONEMeS)
 library(BioNet)
 library(igraph)
-library(PHONEMeS)
 library(hash)
 library(dplyr)
 library(readxl)
@@ -69,6 +93,8 @@ load(file = system.file("NetworKIN_noCSK_filt.RData", package="PHONEMeS"))
 load(file = system.file("inputObj_Terfve.RData", package="PHONEMeS"))
 
 ```
+
+Scripts of how the inputs for this case-study have been provided [here](https://github.com/saezlab/PHONEMeS/tree/master/Example/Example_MainData/code).
 
 Next we prepare the data objwcts which will be used as an input by PHONEMeS.
 
@@ -103,9 +129,13 @@ Then finally we perform the PHONEMeS analysis for the MTOR inhibition experiment
 experiments <- c(6) # for MTORi case
 
 # Running PHONEMeS - cplex
-# Run PHONEMeS with multiple solutions from CPLEX
+# Run PHONEMeS providing one solution from CPLEX (nSolutions = 1)
+resultsSingle <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 1, nK = "no", solverPath = path_to_executable_solver)
+write.table(x = resultsSingle, file = "MTORi_sif_cplex_single.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+# Run PHONEMeS with multiple solutions from CPLEX (nSolutions = 100)
 resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no", solverPath = path_to_executable_solver)
-write.table(x = resultsMulti, file = "MTORi_sif_cplex.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = resultsMulti, file = "MTORi_sif_cplex_multiple.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 
 nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
 
@@ -138,9 +168,9 @@ We start first by loading the required packages and the necessary PHONEMeS input
 
 ```R
 # Load packages
+library(PHONEMeS)
 library(BioNet)
 library(igraph)
-library(PHONEMeS)
 library(hash)
 library(dplyr)
 library(readxl)
@@ -182,10 +212,12 @@ Next we perform the PHONEMeS analysis to obtain the time-course modelling of sig
 # separate solutions we have obtained out of the 100 runs we have set to perform (nIter=100).
 set.seed(383789)
 resultsMulti = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, inputObj = dataInput, experiments = experiments, bg = bg, nIter = 100)
-nodeAttribudes <- assignAttributes(sif = resultsMulti[which(resultsMulti[, 2]>=20), ], dataGMM = dataInput, targets = targets.P, writeAttr = FALSE)
+nodeAttribudes <- assignAttributes(sif = resultsMulti[, c(1, 2, 4)], dataGMM = dataInput, targets = targets.P, writeAttr = FALSE)
 
-write.table(x = resultsMulti[which(resultsMulti[, 2]>=20), ], file = "ednrb_network.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = resultsMulti, file = "ednrb_network.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(x = resultsMulti[which(as.numeric(resultsMulti[, 2])>=20), ], file = "ednrb_network_20.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 write.table(x = nodeAttribudes, file = "ednrb_attributes.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
 ```
 
 ### PHONEMeS Upside-Down Analysis
@@ -193,9 +225,9 @@ write.table(x = nodeAttribudes, file = "ednrb_attributes.txt", quote = FALSE, se
 As always, we start first by loading the required packages and the necessary PHONEMeS inputs for this example:
 ```R
 # Load packages
+library(PHONEMeS)
 library(BioNet)
 library(igraph)
-library(PHONEMeS)
 library(hash)
 library(dplyr)
 library(readxl)

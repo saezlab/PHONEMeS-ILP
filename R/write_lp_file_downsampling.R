@@ -6,7 +6,8 @@
 write_lp_file_downsampling <- function(dataGMM, 
                                        pknList,
                                        targets, 
-                                       experiments){
+                                       experiments,
+                                       penFac){
   # Build the matrix wth the necessary data for all the species in the prior knowledge
   dataMatrix <- buildDataMatrix(dataGMM = dataGMM, pknList = pknList, targets = targets, experiments = experiments)
   
@@ -24,7 +25,7 @@ write_lp_file_downsampling <- function(dataGMM,
   saveRDS(binaries, file="tmp_binaries.rds")
   
   # Writing the objective function
-  oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries)
+  oF <- write_objective_function(dataMatrix = dataMatrix, binaries = binaries, sizePen = penFac)
   
   # Writing the bounds and also all the vvariables
   bounds <- write_boundaries(binaries = binaries, pknList = pknList, M = 100, dataMatrix = dataMatrix)

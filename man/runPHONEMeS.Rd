@@ -49,6 +49,9 @@ CPLEX parameter: Intensity of solution searching (0,1,2,3,4 - default: 4)
   \item{timelimit}{
 CPLEX/Cbc parameter: Time limit of CPLEX optimisation (in seconds - default: 3600)
 }
+  \item{penFac}{
+size penalty factor (default: 0.00001)
+}
 }
 \value{
 This function returns the combined network solutions of PHONEMeS. It contains the Source, the Target and the Weight of each interaction. The Weight tells how frequently an interaction is present across the different solutioins.

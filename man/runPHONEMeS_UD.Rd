@@ -28,6 +28,9 @@ solver to use (either: cplex or cbc - cplex by default)
   \item{solverPath}{
 path to solver (default: "~/Documents/cplex")
 }
+  \item{penFac}{
+size penalty factor (default: 0.00001)
+}
 }
 \value{
 This function returns the combined network solutions of PHONEMeS. It contains the Source, the Target and the Weight of each interaction. The Weight tells how frequently an interaction is present across the different solutioins.
