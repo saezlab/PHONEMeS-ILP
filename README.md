@@ -79,9 +79,9 @@ We start first by loading the required packages and the necessary PHONEMeS input
 
 ```R
 # Load packages
+library(PHONEMeS)
 library(BioNet)
 library(igraph)
-library(PHONEMeS)
 library(hash)
 library(dplyr)
 library(readxl)
@@ -168,9 +168,9 @@ We start first by loading the required packages and the necessary PHONEMeS input
 
 ```R
 # Load packages
+library(PHONEMeS)
 library(BioNet)
 library(igraph)
-library(PHONEMeS)
 library(hash)
 library(dplyr)
 library(readxl)
@@ -225,9 +225,9 @@ write.table(x = nodeAttribudes, file = "ednrb_attributes.txt", quote = FALSE, se
 As always, we start first by loading the required packages and the necessary PHONEMeS inputs for this example:
 ```R
 # Load packages
+library(PHONEMeS)
 library(BioNet)
 library(igraph)
-library(PHONEMeS)
 library(hash)
 library(dplyr)
 library(readxl)
