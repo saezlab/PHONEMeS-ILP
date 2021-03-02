@@ -11,10 +11,13 @@ This function takes the PHONEMeS inputs of the time-point variant (data object, 
 a list of drug targets
 }
   \item{conditions}{
-which experimental conditions to use for the analysis	
+the experimental conditions from the data	
 }
   \item{inputObj}{
 data inputs of PHONEMeS
+}
+  \item{experiments}{
+which experimental conditions to consider for the analysis
 }
   \item{bg}{
 the background network

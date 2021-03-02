@@ -3,7 +3,7 @@
 #' @param Arguments 
 #' @param targets.P
 #' @param conditions
-#' @param dataGMM
+#' @param inputObj
 #' @param experiments
 #' @param bg
 #' @param nK 
@@ -14,7 +14,7 @@
 
 runPHONEMeS_UD <- function(targets.P, 
                            conditions, 
-                           dataGMM, 
+                           inputObj, 
                            experiments, 
                            bg, 
                            nK="all", 
@@ -28,7 +28,7 @@ runPHONEMeS_UD <- function(targets.P,
     stop(paste0("Select a valid solver option (", paste(valid_solver_list, collapse=", "), ")"))
   }
   
-  data.P <- dataBycond(dataGMM, bg, scaled=TRUE, rowBycond=conditions)
+  data.P <- dataBycond(inputObj, bg, scaled=TRUE, rowBycond=conditions)
   show(data.P)
   
   speciesP(data.P)
@@ -41,7 +41,7 @@ runPHONEMeS_UD <- function(targets.P,
   
   TG <- unique(unlist(targets.P))
   
-  write_lp_file_inv_1(dataGMM = dataGMM, pknList = pknList, targets = targets.P, 
+  write_lp_file_inv_1(dataGMM = inputObj, pknList = pknList, targets = targets.P, 
                       experiments = conditions, penFac = penFac)
   
   if (solver=="cplex"){
@@ -66,7 +66,7 @@ runPHONEMeS_UD <- function(targets.P,
     
     TG <- unlist(targets.P)
     
-    write_lp_file_inv_2(dataGMM = dataGMM, pknList = pknList, targets = targets.P, 
+    write_lp_file_inv_2(dataGMM = inputObj, pknList = pknList, targets = targets.P, 
                         experiments = conditions, penFac = penFac)
     
     if (solver=="cplex"){

@@ -339,7 +339,7 @@ Finally running the upside-down variant of PHONEMeS and saving the network resul
 **Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
 
 ```R
-phonemes_ud <- runPHONEMeS_UD(targets.P = targets.P, conditions = conditions, dataGMM = dataInput, experiments = experiments, 
+phonemes_ud <- runPHONEMeS_UD(targets.P = targets.P, conditions = conditions, inputObj = dataInput, experiments = experiments, 
                               bg = bg, solverPath = path_to_executable_solver)
 
 write.table(x = phonemes_ud$Downside, file = "phonemes_ud_down.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
