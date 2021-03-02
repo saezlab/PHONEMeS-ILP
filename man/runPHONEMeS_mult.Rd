@@ -29,7 +29,7 @@ a single string ("all","no", "drugs2data", "data") specifying whether the predic
 solver to use (either: cplex or cbc - cplex by default)
 }
   \item{solverPath}{
-path to solver (default: "~/Documents/cplex")
+path to solver (default: "/usr/bin/cplex")
 }
   \item{nIter}{
 number of iterations to run/solution to be returned by PHONEMeS (default: 100)

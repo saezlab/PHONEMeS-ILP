@@ -17,7 +17,7 @@
 
 runPHONEMeS_mult <- function(targets.P, conditions, inputObj, experiments, bg, 
                              nIter = 100, nK="all", solver="cplex", 
-                             solverPath="~/Documents/cplex", penFac=0.0001){
+                             solverPath="/usr/bin/cplex", penFac=0.0001){
   
   valid_solver_list <- c("cplex", "cbc")
   if (!(solver %in% valid_solver_list)){

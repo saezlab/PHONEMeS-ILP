@@ -1,4 +1,5 @@
-assignAttributes <- function(sif = sif, dataGMM = dataGMM, targets = targets, writeAttr = TRUE, fileName = "nodesAttributes.txt"){
+assignAttributes <- function(sif = sif, inputObj = inputObj, targets = targets, 
+                             writeAttr = TRUE, fileName = "nodesAttributes.txt"){
   
   species <- unique(c(sif[, 1], sif[, 3]))
   
@@ -11,7 +12,7 @@ assignAttributes <- function(sif = sif, dataGMM = dataGMM, targets = targets, wr
   tt <- unique(unlist(targets))
   nodesAttributes[which(nodesAttributes[, 1]%in%tt), 2] <- "D"
   
-  ss <- dataGMM@IDmap$S.cc
+  ss <- inputObj@IDmap$S.cc
   nodesAttributes[which(nodesAttributes[, 1]%in%ss), 2] <- "P"
   
   if(writeAttr){

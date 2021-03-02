@@ -122,7 +122,7 @@ targets.P<-list(cond1=c("AKT1_HUMAN", "AKT2_HUMAN"), cond2=c("KCC2A_HUMAN", "KCC
 
 Then finally we perform the PHONEMeS analysis for the MTOR inhibition experiment (condition 6).
 
-**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry; default: ```solverPath = "/usr/bin/cplex"```).
 
 ```R
 # Select experimental condition
@@ -137,13 +137,13 @@ write.table(x = resultsSingle, file = "MTORi_sif_cplex_single.txt", quote = FALS
 resultsMulti <- runPHONEMeS(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, solver = "cplex", nSolutions = 100, nK = "no", solverPath = path_to_executable_solver)
 write.table(x = resultsMulti, file = "MTORi_sif_cplex_multiple.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 
-nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
+nodesAttributes <- assignAttributes(sif = resultsMulti, inputObj = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
 
 ```
 
 For running PHONEMeS by considering multiple conditions we can consider the case where we wish to retrieve consensus network solutions for when combining evidences from the PI3Ki-AKTi-MTORi inhibition experimental conditions. This analysis can be performed either by requesting multiple solutions directly from the CPLEX options or by performing PHONEMeS analysis multiple times by randomly downsampling the measurements and retrieving one solution for each iteration. These single solutions are then integrated into a combined network. With increasing number of experimental conditions, the number of possible solutions is expected to increase substantially and the Downsampling porcedure is advised to be used for these situations since it integrates single solutions in a more unbiased manner and the integrated network is sparser.
 
-**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry; default: ```solverPath = "/usr/bin/cplex"```).
 
 ```R
 # Select experimental condition
@@ -156,7 +156,7 @@ write.table(x = resultsMulti, file = "PI3Ki_AKTi_MTORi_sif_cplex.txt", quote = F
 resultsMulti <- runPHONEMeS_Downsampling(targets.P = targets.P, conditions = conditions, inputObj = inputObj, experiments = experiments, bg = bg, nIter = 100, nK = "no")
 write.table(x = resultsMulti, file = "PI3Ki_AKTi_MTORi_sif_downsampling.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 
-nodesAttributes <- assignAttributes(sif = resultsMulti, dataGMM = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
+nodesAttributes <- assignAttributes(sif = resultsMulti, inputObj = inputObj, targets = targets.P[experiments], writeAttr = TRUE)
 
 ```
 
@@ -205,14 +205,14 @@ experiments <- list(tp1=c(1), tp2=c(2), tp3=c(3), tp4=c(4), tp5=c(5))
 
 Next we perform the PHONEMeS analysis to obtain the time-course modelling of signalling. We perform this analysis 100 times where for each iteration we retain a random sample of measurements. Each solution at each iteration contains one time-course signalling model which in the end is then combined into one integrated network.
 
-**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry; default: ```solverPath = "/usr/bin/cplex"```).
 
 ```R
 # Running multiple time-point variant of PHONEMeS and retain only those interactions which have a weight higher than 20/appear at least 20 times in the
 # separate solutions we have obtained out of the 100 runs we have set to perform (nIter=100).
 set.seed(383789)
 resultsMulti = runPHONEMeS_mult(targets.P = targets.P, conditions = conditions, inputObj = dataInput, experiments = experiments, bg = bg, nIter = 100)
-nodeAttribudes <- assignAttributes(sif = resultsMulti[, c(1, 2, 4)], dataGMM = dataInput, targets = targets.P, writeAttr = FALSE)
+nodeAttribudes <- assignAttributes(sif = resultsMulti[, c(1, 2, 4)], inputObj = dataInput, targets = targets.P, writeAttr = FALSE)
 
 write.table(x = resultsMulti, file = "ednrb_network.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 write.table(x = resultsMulti[which(as.numeric(resultsMulti[, 2])>=20), ], file = "ednrb_network_20.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
@@ -336,7 +336,7 @@ experiments <- c(1)
 
 Finally running the upside-down variant of PHONEMeS and saving the network results. The ```phonemes_ud``` output on this case will consist of a list of three objects: the downside network solution, the upside network solution as well as the combined network solution which integrates the two. These results can then be saved as matrices in a *txt* format which can then be used to visualize the network graph solutions.
 
-**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry).
+**Attention:** Here the user must additionally provide the path to the executable CPLEX or CBC solver after having obtained the license and downloaded them. The path must be set on the ```solverPath``` variable (i.e. ```solverPath = "~/Documents/cplex"```, if the user wishes to use the *cplex* executable which he saved in the *Documents* direcotry; default: ```solverPath = "/usr/bin/cplex"```).
 
 ```R
 phonemes_ud <- runPHONEMeS_UD(targets.P = targets.P, conditions = conditions, inputObj = dataInput, experiments = experiments, 
@@ -346,7 +346,7 @@ write.table(x = phonemes_ud$Downside, file = "phonemes_ud_down.txt", quote = FAL
 write.table(x = phonemes_ud$Upside, file = "phonemes_ud_up.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 write.table(x = phonemes_ud$Combined, file = "phonemes_ud_combined.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 
-nodesAttributes <- assignAttributes(sif = phonemes_ud$Combined, dataGMM = dataInput, targets = targets.P)
+nodesAttributes <- assignAttributes(sif = phonemes_ud$Combined, inputObj = dataInput, targets = targets.P)
 write.table(x = nodesAttributes, file = "nodes_attributes.txt", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 
 ```

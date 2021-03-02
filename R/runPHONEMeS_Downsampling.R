@@ -19,7 +19,7 @@ runPHONEMeS_Downsampling <- function(targets.P,
                                      nIter = 100, 
                                      nK="all", 
                                      solver="cplex", 
-                                     solverPath = "~/Documents/cplex", 
+                                     solverPath = "/usr/bin/cplex", 
                                      penFac = 0.0001){
   
   conditions <- conditions[experiments]

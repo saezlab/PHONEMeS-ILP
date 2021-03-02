@@ -10,7 +10,7 @@ This function assigns attributes to each node in the PHONEMeS solution (D - whet
   \item{sif}{
 the PHONEMeS solution as a matrix of interactions with three columns (Target, Source and Weight)
 }
-  \item{dataGMM}{
+  \item{inputObj}{
 the PHONEMeS data inputs that were used for the analysis	
 }
   \item{targets}{
