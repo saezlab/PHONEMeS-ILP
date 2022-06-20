@@ -98,7 +98,7 @@ load(file = system.file("inputObj_Terfve.RData", package="PHONEMeS"))
 
 ```
 
-Scripts of how the inputs for this case-study have been provided [here](https://github.com/saezlab/PHONEMeS/tree/master/Example/Example_MainData/code).
+Scripts of how the inputs for this case-study have been provided [here](https://github.com/saezlab/PHONEMeS/tree/afd672ecadd0c4b72ffd41416bd3fb897b46a31b/Example/Example_MainData). These scripts are part of the [Release 1.0](https://github.com/saezlab/PHONEMeS/releases/tag/v1.0.0).
 
 Next we prepare the data objwcts which will be used as an input by PHONEMeS.
 
